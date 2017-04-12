@@ -12,39 +12,25 @@ function BaseCtrl($scope, $timeout) {
 }
 
 function HeaderCtrl($scope) {
-    $scope.parts = {
-        '/': '/',
-        '/questions': 'questions',
-        '/stats': 'stats',
-        '/questions/add': 'questions'
-    };
-    $scope.active = null;
+    $scope.dropdown = false;
 
-    $scope.$on('$routeChangeSuccess', function(event, current) {
-        for (var route in $scope.parts) {
-            if (current.$$route.regexp.test(route)) {
-                $scope.active = $scope.parts[route];
-            }
-        }
-    });
-
-    $scope.isActive = function(name) {
-        return $scope.active === name ? "active" : "";
-    };
+    $scope.toggleDropdown = function() {
+        $scope.dropdown = !$scope.dropdown;
+    }
 }
 
 function IndexCtrl($scope, $http) {
 
 }
 
-function TasklistCtrl($scope, $http) {
+function TaskListCtrl($scope, $http) {
 
 }
 
-function TaskeditCtrl($scope, $http) {
+function TaskEditCtrl($scope, $http) {
 
 }
 
-function UserpageCtrl($scope, $http) {
+function UserPageCtrl($scope, $http) {
 
 }

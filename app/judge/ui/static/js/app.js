@@ -4,9 +4,9 @@
     .controller('baseCtrl', BaseCtrl)
     .controller('headerCtrl', HeaderCtrl)
     .controller('indexCtrl', IndexCtrl)
-    .controller('tasklistCtrl', TasklistCtrl)
-    .controller('taskeditCtrl', TaskeditCtrl)
-    .controller('userpageCtrl', UserpageCtrl)
+    .controller('tasklistCtrl', TaskListCtrl)
+    .controller('taskeditCtrl', TaskEditCtrl)
+    .controller('userpageCtrl', UserPageCtrl)
 
 
     // Configuring routes
@@ -20,28 +20,30 @@
             $routeProvider
 
             .when('/', {
-                templateUrl: 'static/partials/test.html',
-                controller: 'testCtrl'
+                templateUrl: 'static/partials/index.html',
+                controller: 'indexCtrl'
             })
 
-            .when('/questions/add', {
-                templateUrl: 'static/partials/questions-add.html',
-                controller: 'questionsAddCtrl'
+            .when('/tasks', {
+                templateUrl: 'static/partials/tasklist.html',
+                controller: 'tasklistCtrl'
             })
 
-            .when('/questions', {
-                templateUrl: 'static/partials/questions.html',
-                controller: 'questionsCtrl'
+            .when('/tasks/new', {
+                templateUrl: 'static/partials/edittask.html',
+                controller: 'taskeditCtrl'
             })
 
-            .when('/stats', {
-                templateUrl: 'static/partials/stats.html',
-                controller: 'statsCtrl'
+            .when('/user/:username', {
+                templateUrl: 'static/partials/userpage.html',
+                controller: 'userpageCtrl'
             })
 
-            .otherwise({
-                redirectTo: '/'
-            });
+            .when('/auth/logout', {
+                redirectTo: function() {
+                    window.location = '/auth/logout';
+                }
+            })
         }
     ]);
 })();

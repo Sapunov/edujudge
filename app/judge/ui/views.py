@@ -7,37 +7,7 @@ from django.contrib.auth import login, logout, authenticate
 @login_required
 def indexView(request):
 
-    return render(request, 'index.html')
-
-
-@login_required
-def tasklistView(request):
-
-    return render(request, 'tasklist.html')
-
-
-@login_required
-def taskView(request, task_id):
-
-    pass
-
-
-@login_required
-def taskeditView(request, task_id):
-
-    return render(request, 'edittask.html', {})
-
-
-@login_required
-def tasknewView(request):
-
-    return render(request, 'edittask.html')
-
-
-@login_required
-def userPageView(request, username):
-
-    return render(request, 'userpage.html')
+    return render(request, 'main.html')
 
 
 def logoutView(request):
@@ -58,8 +28,6 @@ def loginView(request):
         username = request.POST.get('username')
         password = request.POST.get('password')
         next_url = request.GET.get('next', '/')
-
-        print(next_url)
 
         user = authenticate(username=username, password=password)
 
