@@ -7,11 +7,16 @@
 <meta http-equiv="X-UA-Compatible" content="ie=edge">
 <link rel="stylesheet" href="/static/bootstrap.min.css">
 <link rel="stylesheet" href="/static/style.css">
+<link rel="stylesheet" type="text/css" href="//codemirror.net/lib/codemirror.css">
 
 <title>{% block title %}Education Judge{% endblock %}</title>
 
 <script src="/static/angular.min.js"></script>
 <script src="/static/angular-route.min.js"></script>
+<script src="/static/ui-bootstrap-tpls-2.5.0.min.js"></script>
+<script src="//codemirror.net/lib/codemirror.js"></script>
+<script src="http://codemirror.net/mode/python/python.js"></script>
+<script src="/static/ui-codemirror.min.js"></script>
 <script src="/static/app.js"></script>
 </head>
 <body ng-controller="baseCtrl">
@@ -31,10 +36,10 @@
             <li><a href="/tasks/new">Добавить задачу</a></li>
           </ul>
           <ul class="nav navbar-nav navbar-right">
-            <li class="dropdown">
+            <li class="dropdown" uib-dropdown>
               <a href="#"
-                  role="button" ng-click="toggleDropdown()">{{ user.first_name }} {{ user.last_name }}<span class="caret"></span></a>
-              <ul class="dropdown-menu" ng-class="(dropdown) ? 'show' : ''">
+                  role="button" class="dropdown-toggle" uib-dropdown-toggle>{{ user.first_name }} {{ user.last_name }}<span class="caret"></span></a>
+              <ul class="dropdown-menu" uib-dropdown-menu>
                 <li><a href="/user/{{ user.username }}">Моя страница</a></li>
                 <li role="separator" class="divider"></li>
                 <li><a href="/auth/logout">Выйти</a></li>

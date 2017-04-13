@@ -236,7 +236,7 @@
 /* Main judge styles */
 
 .main {
-  padding-bottom: 50px;
+  padding-bottom: 20px;
 }
 
 .tarea {
@@ -259,6 +259,11 @@
 
 .test-item:last-child {
   margin-bottom: 0;
+}
+
+.btn-area {
+  padding-top: 10px;
+  padding-bottom: 10px;
 }
 
 .btn-area-grey {
@@ -308,4 +313,15 @@
   -webkit-box-shadow: 0px 0px 2px #616161;
   -moz-box-shadow: 0px 0px 2px #616161;
   box-shadow: 0px 0px 2px #616161;
+}
+
+/* Form validation styles */
+
+textarea.ng-dirty.ng-invalid,
+input.ng-dirty.ng-invalid {
+  border: 1px solid #F44336;
+}
+
+.task-area-wrapper {
+  border: 1px solid #ddd;
 }

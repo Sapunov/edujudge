@@ -18,6 +18,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_rq',
 ]
 
 MIDDLEWARE = [
@@ -85,3 +86,53 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 LOGIN_URL = '/auth/login'
+
+SOURCE_DIR = os.path.join(BASE_DIR, 'user_sources')
+
+RQ_QUEUES = {
+    'default': {
+        'HOST': 'localhost',
+        'PORT': 6379,
+        'DB': 0,
+    }
+}
+
+
+TEST_ERRORS = [
+    None,                               # 0
+    'Ошибка компиляции программы',      # 1
+    'Неправильный ответ',               # 2
+    'Превышено ограничение по времени'  # 3
+]
+
+LOGS_DIR = os.path.join(BASE_DIR, 'logs')
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': True,
+    'formatters': {
+        'verbose': {
+            'format': '%(asctime)s %(filename)s:'
+                      '%(funcName)s:%(lineno)s '
+                      '%(levelname)s: %(message)s'
+        },
+        'simple': {
+            'format': '%(asctime)s %(message)s'
+        },
+    },
+    'handlers': {
+        'main': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(LOGS_DIR, 'main.log'),
+            'formatter': 'verbose'
+        }
+    },
+    'loggers': {
+        'main': {
+            'handlers': ['main'],
+            'level': 'DEBUG',
+            'propagate': True
+        }
+    },
+}

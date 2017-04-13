@@ -1,11 +1,12 @@
 (function() {
-    angular.module('judge', ['ngRoute'])
+    angular.module('judge', ['ngRoute', 'ui.bootstrap', 'ui.codemirror'])
 
     .controller('baseCtrl', BaseCtrl)
     .controller('headerCtrl', HeaderCtrl)
     .controller('indexCtrl', IndexCtrl)
     .controller('tasklistCtrl', TaskListCtrl)
     .controller('taskeditCtrl', TaskEditCtrl)
+    .controller('taskCtrl', TaskCtrl)
     .controller('userpageCtrl', UserPageCtrl)
 
 
@@ -24,14 +25,19 @@
                 controller: 'indexCtrl'
             })
 
-            .when('/tasks', {
-                templateUrl: 'static/partials/tasklist.html',
-                controller: 'tasklistCtrl'
-            })
-
             .when('/tasks/new', {
                 templateUrl: 'static/partials/edittask.html',
                 controller: 'taskeditCtrl'
+            })
+
+            .when('/tasks/:taskId', {
+                templateUrl: 'static/partials/task.html',
+                controller: 'taskCtrl'
+            })
+
+            .when('/tasks', {
+                templateUrl: 'static/partials/tasklist.html',
+                controller: 'tasklistCtrl'
             })
 
             .when('/user/:username', {

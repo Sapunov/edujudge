@@ -1,0 +1,55 @@
+<div ng-show="task">
+  <h1>{{ task.id }}. {{ task.title }}</h1>
+
+  <div>
+    <h3>Описание</h3>
+    {{ task.description }}
+  </div>
+  <div>
+    <h3>Исходные данные</h3>
+    {{ task.initial_data }}
+  </div>
+  <div>
+    <h3>Результат</h3>
+    {{ task.result }}
+  </div>
+  <div>
+    <h3>Ограничения</h3>
+      <ul>
+        <li>Ограничение по времени - {{ task.timelimit }} сек.</li>
+      </ul>
+  </div>
+  <div>
+    <h3>Примеры</h3>
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Исходные данные</th>
+          <th>Выходные данные</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="example in task.examples">
+          <td>{{ example.text }}</td>
+          <td>{{ example.answer }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div ng-show="task.notes">
+    <h3>Примечания</h3>
+    {{ task.notes }}
+  </div>
+  <div>
+    <h3>Отправить решение</h3>
+    <div class="task-area-wrapper">
+      <textarea class="task-area" ui-codemirror="codeMirror"
+                ng-model="source" ng-disabled="sent"></textarea>
+    </div>
+    <div class="form-group btn-area">
+      <button class="btn btn-success"
+              ng-click="checkTask()"
+              ng-disabled="!source || sent">Отправить на проверку</button>
+    </div>
+  </div>
+</div>

@@ -1,48 +1,92 @@
-<form role="form" id="newtask-form">
+<form role="form" name="taskform" ng-submit="saveTask()" novalidate>
   <div class="form-group">
-    <label for="title">Заголовок задачи</label>
+    <label for="title">Заголовок задачи*</label>
     <input type="text" class="form-control"
-          id="title"
           name="title"
           placeholder="Введите заголовок"
           ng-autofocus="(true)"
-          autocomplete="off">
+          autocomplete="off"
+          ng-model="task.title"
+          required>
   </div>
   <div class="form-group">
-    <label for="text">Текст задачи</label>
-    <textarea class="form-control tarea no-resize"
-              id="text"
-              name="text"
-              placeholder="Введите текст задачи"></textarea>
+    <label for="text">Описание задачи*</label>
+    <textarea class="form-control tarea"
+              name="description"
+              placeholder="Введите описание задачи"
+              ng-model="task.description"
+              required></textarea>
   </div>
   <div class="form-group">
-    <label for="text">Ограничение по времени на тест (секунд)</label>
-    <input type="text" class="form-control"
-          id="timelimit"
+    <label for="text">Исходные данные*</label>
+    <textarea class="form-control tarea"
+              name="initial_data"
+              placeholder="Введите исходные данные"
+              ng-model="task.initial_data"
+              required></textarea>
+  </div>
+  <div class="form-group">
+    <label for="text">Результат*</label>
+    <textarea class="form-control tarea"
+              name="result"
+              placeholder="Введите результат задачи"
+              ng-model="task.result"
+              required></textarea>
+  </div>
+  <div class="form-group">
+    <label for="text">Ограничение по времени на тест (секунд)*</label>
+    <input type="number" class="form-control"
           name="timelimit"
           placeholder="Введите ограничение в секундах"
-          value="1"
-          autocomplete="off">
+          autocomplete="off"
+          ng-model="task.timelimit"
+          required>
   </div>
   <div class="form-group">
-    <label for="exampleInputFile">Тесты</label>
-    <div class="tests" id="tests-box">
-      <div class="row test-item">
+    <label>Примеры*</label>
+    <div class="tests">
+      <div class="row test-item" ng-repeat="i in getArray(numOfExamples) track by $index">
         <div class="col-md-6">
           <textarea class="form-control tarea no-resize"
-                    name="test-1-text"
-                    placeholder="Тест"></textarea>
+                    ng-model="task.examples[$index]['text']"
+                    placeholder="Входные данные" required></textarea>
         </div>
         <div class="col-md-6">
           <textarea class="form-control tarea no-resize"
-                    name="test-1-answer"
-                    placeholder="Ответ"></textarea>
+                    ng-model="task.examples[$index]['answer']"
+                    placeholder="Выходные данные" required></textarea>
         </div>
       </div>
     </div>
-    <a href="#" id="add-test-link">Добавить тест</a>
+    <a href="#" id="add-test-link" ng-click="numOfExamples = numOfExamples + 1">Добавить Пример</a>
+  </div>
+  <div class="form-group">
+    <label for="text">Примечания</label>
+    <textarea class="form-control tarea"
+              name="notes"
+              placeholder="Введите примечания"
+              ng-model="task.notes"></textarea>
+  </div>
+  <div class="form-group">
+    <label>Тесты*</label>
+    <div class="tests" id="tests-box">
+      <div class="row test-item" ng-repeat="i in getArray(numOfTests) track by $index">
+        <div class="col-md-6">
+          <textarea class="form-control tarea no-resize"
+                    ng-model="task.tests[$index]['text']"
+                    placeholder="Тест" required></textarea>
+        </div>
+        <div class="col-md-6">
+          <textarea class="form-control tarea no-resize"
+                    ng-model="task.tests[$index]['answer']"
+                    placeholder="Ответ" required></textarea>
+        </div>
+      </div>
+    </div>
+    <a href="#" id="add-test-link" ng-click="numOfTests = numOfTests + 1">Добавить тест</a>
   </div>
   <div class="form-group btn-area-grey">
-    <button type="submit" class="btn btn-success">Сохранить</button>
+    <button type="submit" class="btn btn-success"
+            ng-disabled="taskform.$invalid">Сохранить</button>
   </div>
 </form>
