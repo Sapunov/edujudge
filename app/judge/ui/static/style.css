@@ -325,3 +325,15 @@ input.ng-dirty.ng-invalid {
 .task-area-wrapper {
   border: 1px solid #ddd;
 }
+
+.task-list-item {
+  font-size: 18px;
+}
+
+.green {
+  color: #5cb85c;
+}
+
+.red {
+  color: #d9534f;
+}

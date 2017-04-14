@@ -35,6 +35,11 @@ function IndexCtrl($scope, $http) {
 function TaskListCtrl($scope, $http) {
 
     $scope.tasks = [];
+    $scope.solved_statuses = {
+        '-1': 'hide',
+        '0': 'glyphicon glyphicon-remove red',
+        '1': 'glyphicon glyphicon-ok green',
+    }
 
     function loadTasks() {
         $http.get(judge.api + '/tasks')

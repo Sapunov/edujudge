@@ -93,6 +93,7 @@ class TasksListSerializer(serializers.Serializer):
 
     id = serializers.IntegerField(required=False)
     title = serializers.CharField(max_length=100)
+    solved = serializers.IntegerField()
 
 
 class TaskCheckSerializer(serializers.Serializer):

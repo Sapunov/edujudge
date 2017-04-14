@@ -15,7 +15,7 @@ class TasksListView(APIView):
 
     def get(self, request, format=None):
 
-        tasks = Task.objects.all()
+        tasks = Task.all_with_user_solution(request.user)
         serializer = serialize(serializers.TasksListSerializer, tasks, many=True)
 
         return Response(serializer.data)

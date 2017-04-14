@@ -75,14 +75,16 @@ def test_solution(solution_id):
             else:
                 solution.error = 2
 
-            solution.save()
             break
     else:
         solution.verdict = 'ok'
-        solution.save()
+
+    solution.save()
+
+    log.debug('After - error_code: %s, verdict: %s', solution.error, solution.verdict)
 
     return {
-        'error_code': error_code,
+        'error_code': solution.error,
         'verdict': solution.verdict,
         'testnum': solution.testnum,
         'task_id': solution.task.id

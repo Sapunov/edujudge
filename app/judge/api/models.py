@@ -16,6 +16,21 @@ class Task(models.Model):
     timelimit = models.SmallIntegerField()
     author = models.ForeignKey(User, on_delete=models.PROTECT, related_name='+')
 
+    @classmethod
+    def all_with_user_solution(cls, user):
+
+        tasks = cls.objects.all()
+        for i in range(len(tasks)):
+            solutions = tasks[i].solutions.filter(user=user).order_by('error')
+            if solutions.count() == 0:
+                tasks[i].solved = -1
+            elif solutions[0].error == 0:
+                tasks[i].solved = 1
+            else:
+                tasks[i].solved = 0
+
+        return tasks
+
     def __str__(self):
 
         return self.title
@@ -56,7 +71,7 @@ class Test(models.Model):
 
 class Solution(models.Model):
 
-    task = models.ForeignKey(Task, on_delete=models.CASCADE)
+    task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name='solutions')
     test = models.ForeignKey(Test, on_delete=models.CASCADE, default=None, null=True)
     testnum = models.SmallIntegerField(default=0)
     time = models.DateTimeField(auto_now_add=True)
