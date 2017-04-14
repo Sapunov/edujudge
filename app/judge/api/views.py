@@ -59,3 +59,18 @@ class TaskCheckView(APIView):
         job = django_rq.enqueue(test_solution, solution_id=solution.id)
 
         return Response({ 'qid': job.id })
+
+
+class QueueView(APIView):
+
+    def get(self, request, qid, format=None):
+
+        default_queue = django_rq.get_queue('default')
+        job = default_queue.fetch_job(qid)
+
+        return Response({
+            'qid': qid,
+            'status': job.status,
+            'finished': job.is_finished,
+            'result': job.result
+        })

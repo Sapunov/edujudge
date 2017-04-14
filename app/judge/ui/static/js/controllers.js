@@ -1,4 +1,4 @@
-function BaseCtrl($scope, $timeout) {
+function BaseCtrl($scope, $timeout, $http) {
     $scope.status_message = '';
 
     $scope.say = function(text) {
@@ -15,6 +15,13 @@ function BaseCtrl($scope, $timeout) {
         $timeout(function() {
             $scope.status_message = '';
         }, 30 * 1000);
+    }
+
+    $scope.get_from_queue = function(qid, callback) {
+        $http.get(judge.api + '/queue/' + qid)
+        .then(function(response) {
+            callback(response);
+        });
     }
 
 }
@@ -66,7 +73,7 @@ function TaskEditCtrl($scope, $http) {
 }
 
 
-function TaskCtrl($scope, $http, $routeParams) {
+function TaskCtrl($scope, $http, $routeParams, $interval) {
 
     $scope.taskId = $routeParams.taskId;
     $scope.task = null;
@@ -76,24 +83,46 @@ function TaskCtrl($scope, $http, $routeParams) {
         readOnly: false
     }
     $scope.sent = false;
+    $scope.intval = null;
 
     $scope.checkTask = function() {
 
-        disable_editing();
+        toogle_editing();
 
         $http.post(judge.api + '/tasks/' + $scope.taskId + '/check', {
             source: $scope.source
         }).then(function(response) {
             if ( response.status === 200 ) {
-                console.log(response.data);
+                interval_check(response.data.qid);
                 $scope.say('Решение отправлено на проверку');
             }
         });
     }
 
-    function disable_editing() {
-        $scope.sent = true;
-        $scope.codeMirror.readOnly = true;
+    function interval_check(qid) {
+
+        $scope.intval = $interval(function() {
+            $scope.get_from_queue(qid, function(response) {
+                if ( response.data.finished ) {
+                    console.log(response.data.result);
+                    $interval.cancel($scope.intval);
+                    let msg = (response.data.result.error_code === 0) ? 'Все правильно!' : 'Есть ошибки :=(';
+                    $scope.say('Задание ' + response.data.result.task_id + ' проверено. ' + msg);
+                    toogle_editing();
+                }
+            });
+        }, 1000);
+    }
+
+    function toogle_editing() {
+
+        if ( $scope.sent ) {
+            $scope.sent = false;
+            $scope.codeMirror.readOnly = false;
+        } else {
+            $scope.sent = true;
+            $scope.codeMirror.readOnly = true;
+        }
     }
 
     function init() {

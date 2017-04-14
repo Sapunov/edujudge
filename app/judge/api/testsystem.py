@@ -80,3 +80,10 @@ def test_solution(solution_id):
     else:
         solution.verdict = 'ok'
         solution.save()
+
+    return {
+        'error_code': error_code,
+        'verdict': solution.verdict,
+        'testnum': solution.testnum,
+        'task_id': solution.task.id
+    }
