@@ -1,5 +1,10 @@
 function BaseCtrl($scope, $timeout, $http) {
     $scope.status_message = '';
+    $scope.solved_statuses = {
+        '-1': 'hide',
+        '0': 'glyphicon glyphicon-remove red',
+        '1': 'glyphicon glyphicon-ok green',
+    }
 
     $scope.say = function(text) {
         $scope.status_message = text;
@@ -23,7 +28,6 @@ function BaseCtrl($scope, $timeout, $http) {
             callback(response);
         });
     }
-
 }
 
 function HeaderCtrl($scope, $timeout) { }
@@ -35,11 +39,6 @@ function IndexCtrl($scope, $http) {
 function TaskListCtrl($scope, $http) {
 
     $scope.tasks = [];
-    $scope.solved_statuses = {
-        '-1': 'hide',
-        '0': 'glyphicon glyphicon-remove red',
-        '1': 'glyphicon glyphicon-ok green',
-    }
 
     function loadTasks() {
         $http.get(judge.api + '/tasks')
@@ -82,6 +81,7 @@ function TaskCtrl($scope, $http, $routeParams, $interval) {
 
     $scope.taskId = $routeParams.taskId;
     $scope.task = null;
+    $scope.solutions = null;
     $scope.codeMirror = {
         lineNumbers: true,
         mode: 'python',
@@ -89,6 +89,7 @@ function TaskCtrl($scope, $http, $routeParams, $interval) {
     }
     $scope.sent = false;
     $scope.intval = null;
+    $scope.result = null;
 
     $scope.checkTask = function() {
 
@@ -109,10 +110,14 @@ function TaskCtrl($scope, $http, $routeParams, $interval) {
         $scope.intval = $interval(function() {
             $scope.get_from_queue(qid, function(response) {
                 if ( response.data.finished ) {
-                    console.log(response.data.result);
+                    let msg = (response.data.result.error === 0) ? 'Все правильно!' : 'Есть ошибки :=(';
+
                     $interval.cancel($scope.intval);
-                    let msg = (response.data.result.error_code === 0) ? 'Все правильно!' : 'Есть ошибки :=(';
                     $scope.say('Задание ' + response.data.result.task_id + ' проверено. ' + msg);
+
+                    $scope.result = response.data.result;
+
+                    load_solutions();
                     toogle_editing();
                 }
             });
@@ -137,13 +142,25 @@ function TaskCtrl($scope, $http, $routeParams, $interval) {
             .then(function(response) {
                 if ( response.status === 200 ) {
                     $scope.task = response.data;
+
                 } else if ( response.status === 204 ) {
                     $scope.say_error('Задание не найдено');
                 } else {
                     $scope.say_error(response.data);
                 }
             });
+
+            load_solutions();
         }
+    }
+
+    function load_solutions() {
+        $http.get(judge.api + '/solutions?task_id=' + $scope.taskId)
+        .then(function(response) {
+            if ( response.data.length > 0 ) {
+                $scope.solutions = response.data;
+            }
+        });
     }
 
     init();

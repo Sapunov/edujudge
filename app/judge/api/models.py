@@ -81,6 +81,33 @@ class Solution(models.Model):
     user = models.ForeignKey(User, on_delete=models.PROTECT, related_name='+')
 
     @classmethod
+    def get_by_task_user(cls, task_id, user, limit=5):
+
+        solutions = cls.objects.filter(
+            task__id=task_id, user=user
+        ).order_by('-time')
+
+        if limit:
+            solutions = solutions[:limit]
+
+        for solution in solutions:
+            solution.error_description = settings.TEST_ERRORS[solution.error]
+
+        return solutions
+
+    @classmethod
+    def is_task_solved(cls, task_id, user):
+
+        solutions = cls.objects.filter(task__id=task_id, user=user).order_by('error')
+
+        if solutions.count() == 0:
+            return -1
+        elif solutions[0].error == 0:
+            return 1
+        else:
+            return 0
+
+    @classmethod
     def create(cls, source, task, user):
 
         source_path = cls.get_source_path(task, user)

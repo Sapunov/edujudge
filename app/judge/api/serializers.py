@@ -77,18 +77,6 @@ class TaskSerializer(serializers.Serializer):
         return task
 
 
-class TaskOnlySerializer(serializers.Serializer):
-
-    id = serializers.IntegerField()
-    title = serializers.CharField(max_length=100)
-    description = serializers.CharField()
-    initial_data = serializers.CharField()
-    result = serializers.CharField()
-    examples = TaskExampleSerializer(many=True)
-    notes = serializers.CharField()
-    timelimit = serializers.IntegerField()
-
-
 class TasksListSerializer(serializers.Serializer):
 
     id = serializers.IntegerField(required=False)
@@ -110,3 +98,33 @@ class TaskCheckSerializer(serializers.Serializer):
         )
 
         return solution
+
+
+class SolutionsListParamsSerializer(serializers.Serializer):
+
+    task_id = serializers.IntegerField()
+
+
+class SolutionsListSerializer(serializers.Serializer):
+
+    task_id = serializers.PrimaryKeyRelatedField(read_only=True)
+    test = serializers.SlugRelatedField(slug_field='text', read_only=True)
+    testnum = serializers.IntegerField()
+    time = serializers.DateTimeField(format='%m-%d-%Y %H:%M:%S')
+    error = serializers.IntegerField()
+    verdict = serializers.CharField()
+    error_description = serializers.CharField()
+    source = serializers.CharField()
+
+
+class TaskOnlySerializer(serializers.Serializer):
+
+    id = serializers.IntegerField()
+    title = serializers.CharField(max_length=100)
+    description = serializers.CharField()
+    initial_data = serializers.CharField()
+    result = serializers.CharField()
+    examples = TaskExampleSerializer(many=True)
+    notes = serializers.CharField()
+    timelimit = serializers.IntegerField()
+    solved = serializers.IntegerField()

@@ -1,5 +1,5 @@
 <div ng-show="task">
-  <h1>{{ task.id }}. {{ task.title }}</h1>
+  <h2>{{ task.id }}. {{ task.title }}</h2>
 
   <div>
     <h3>Описание</h3>
@@ -42,14 +42,72 @@
   </div>
   <div>
     <h3>Отправить решение</h3>
+    <div ng-show="result" class="solution-result">
+      <h4>{{ result.error_description }}</h4>
+      <div ng-show="result.testnum > 0">
+        <h5>Ошибка на тесте - {{ result.testnum }}</h5>
+        <br>
+      </div>
+      <div ng-show="result.test">
+        <b>Входные данные:</b>
+        <blockquote class="input-data">
+          <p class="pre-line">{{ result.test }}</p>
+        </blockquote>
+      </div>
+      <div ng-show="result.verdict">
+        <b ng-show="result.error == 0">Вердикт:</b>
+        <b ng-show="result.error > 0">Вывод:</b>
+        <blockquote class="input-data">
+          <p class="pre-line">{{ result.verdict }}</p>
+        </blockquote>
+      </div>
+    </div>
     <div class="task-area-wrapper">
       <textarea class="task-area" ui-codemirror="codeMirror"
-                ng-model="source" ng-disabled="sent"></textarea>
+        ng-model="source" ng-disabled="sent"></textarea>
     </div>
     <div class="form-group btn-area">
       <button class="btn btn-success"
-              ng-click="checkTask()"
-              ng-disabled="!source || sent">Отправить на проверку</button>
+        ng-click="checkTask()"
+        ng-disabled="!source || sent">Отправить на проверку</button>
     </div>
+  </div>
+  <div ng-show="solutions">
+    <h3>Последние решения</h3>
+
+    <uib-accordion close-others="(true)">
+      <div uib-accordion-group class="panel-default"
+        ng-repeat="solution in solutions">
+        <uib-accordion-heading>
+          <span ng-class="solved_statuses[(solution.error > 0) ? '0' : 1]" aria-hidden="true"></span>
+          <span>{{ solution.error_description }}</span>
+          <small>{{ solution.time }}</small>
+        </uib-accordion-heading>
+        <div ng-show="solution.testnum > 0">
+          <h4>Ошибка на тесте - {{ solution.testnum }}</h4>
+          <br>
+        </div>
+        <div ng-show="solution.test">
+          <b>Входные данные:</b>
+          <blockquote class="input-data">
+            <p class="pre-line">{{ solution.test }}</p>
+          </blockquote>
+        </div>
+        <div ng-show="solution.verdict">
+          <b ng-show="solution.error == 0">Вердикт:</b>
+          <b ng-show="solution.error > 0">Вывод:</b>
+          <blockquote class="input-data">
+            <p class="pre-line">{{ solution.verdict }}</p>
+          </blockquote>
+        </div>
+        <div uib-dropdown>
+          <a href="#" class="good-link"
+            ng-click="solution.sourceCollapsed = !solution.sourceCollapsed">Исходный код</a>
+          <pre class="input-data"
+            uib-collapse="!solution.sourceCollapsed">{{ solution.source }}</pre>
+        </div>
+      </div>
+    </uib-accordion>
+
   </div>
 </div>

@@ -99,10 +99,10 @@ RQ_QUEUES = {
 
 
 TEST_ERRORS = [
-    None,                               # 0
-    'Ошибка компиляции программы',      # 1
-    'Неправильный ответ',               # 2
-    'Превышено ограничение по времени'  # 3
+    'Полное решение',
+    'Ошибка компиляции программы',
+    'Неправильный ответ',
+    'Превышено ограничение по времени'
 ]
 
 LOGS_DIR = os.path.join(BASE_DIR, 'logs')
@@ -135,4 +135,13 @@ LOGGING = {
             'propagate': True
         }
     },
+}
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.SessionAuthentication',
+    ),
 }

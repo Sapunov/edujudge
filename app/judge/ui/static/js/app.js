@@ -9,7 +9,6 @@
     .controller('taskCtrl', TaskCtrl)
     .controller('userpageCtrl', UserPageCtrl)
 
-
     // Configuring routes
     .config(['$locationProvider', '$routeProvider', '$httpProvider',
         function config($locationProvider, $routeProvider, $httpProvider) {

@@ -1,8 +1,15 @@
+import re
 import logging
 from subprocess import PIPE, Popen, TimeoutExpired
+from django.conf import settings
 from judge.api.models import Solution
 
 log = logging.getLogger('main.' + __name__)
+
+
+def mask_output(output):
+
+    return re.sub(r'"' + settings.SOURCE_DIR + r'.*"', 'solution.py', output)
 
 
 def interpreter_test(solution_path, input, timelimit):
@@ -26,6 +33,7 @@ def interpreter_test(solution_path, input, timelimit):
         error_code = 3
 
     output = out.decode() if error_code == 0 else err.decode()
+    output = mask_output(output)
 
     return (error_code, output)
 
@@ -81,11 +89,18 @@ def test_solution(solution_id):
 
     solution.save()
 
+    if solution.test is not None:
+        test_input = solution.test.text
+    else:
+        test_input = None
+
     log.debug('After - error_code: %s, verdict: %s', solution.error, solution.verdict)
 
     return {
-        'error_code': solution.error,
+        'error': solution.error,
+        'error_description': settings.TEST_ERRORS[solution.error],
         'verdict': solution.verdict,
         'testnum': solution.testnum,
-        'task_id': solution.task.id
+        'task_id': solution.task.id,
+        'test': test_input
     }
