@@ -21,7 +21,7 @@ def interpreter_test(solution_path, input, timelimit):
     bytes_input = bytes(input, 'utf-8')
 
     proc = Popen(
-        ['python', solution_path], stdin=PIPE, stdout=PIPE, stderr=PIPE)
+        ['python3', solution_path], stdin=PIPE, stdout=PIPE, stderr=PIPE)
 
     try:
         out, err = proc.communicate(input=bytes_input, timeout=timelimit)

@@ -1,12 +1,14 @@
 import os
 
+NAME = 'judge'
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DATA_DIR = os.path.join('/var/lib/', NAME, 'data')
 
-SECRET_KEY = '%3_gsy*3wr2z9)#j%@em0#@4&6#prsebz7oj(fbj1^bg*sc$y^'
+SECRET_KEY = 'somestrongpassword'
 
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 INSTALLED_APPS = [
@@ -51,12 +53,24 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'judge.wsgi.application'
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+if DEBUG:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(DATA_DIR, 'db.sqlite3'),
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE':   'django.db.backends.postgresql_psycopg2',
+            'NAME':     'db',
+            'USER':     'dba',
+            'PASSWORD': 'somestrongpassword',
+            'HOST':     'postgres',
+            'PORT':     '5432',
+        },
+    }
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -87,11 +101,11 @@ STATIC_URL = '/static/'
 
 LOGIN_URL = '/auth/login'
 
-SOURCE_DIR = os.path.join(BASE_DIR, 'user_sources')
+SOURCE_DIR = os.path.join(DATA_DIR, 'user_sources')
 
 RQ_QUEUES = {
     'default': {
-        'HOST': 'localhost',
+        'HOST': 'redisserver',
         'PORT': 6379,
         'DB': 0,
     }
@@ -105,7 +119,7 @@ TEST_ERRORS = [
     'Превышено ограничение по времени'
 ]
 
-LOGS_DIR = os.path.join(BASE_DIR, 'logs')
+LOGS_DIR = os.path.join(DATA_DIR, 'logs')
 
 LOGGING = {
     'version': 1,
@@ -145,3 +159,5 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
     ),
 }
+
+STATIC_ROOT = os.path.join(DATA_DIR, 'static')
