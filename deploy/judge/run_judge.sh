@@ -4,4 +4,4 @@ sudo docker run -d \
 	--link postgres:postgres \
 	-p 8080:80 \
 	-v ejudgedata:/var/lib/judge/data \
-	edujudge:devel
+	edujudge:latest
