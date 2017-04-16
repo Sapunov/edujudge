@@ -18,4 +18,6 @@ RUN mkdir -p /var/lib/judge/data/logs /var/lib/judge/data/user_sources /var/lib/
 	&& sed -i "s/somestrongdjangokey/$(cat /root/django_key)/g" /var/www/app/judge/settings.py \
 	&& sed -i "s/somestrongdbpassword/$(cat /root/db_password)/g" /var/www/app/judge/settings.py
 
+VOLUME /var/lib/judge/data
+
 CMD ["/usr/bin/supervisord"]
