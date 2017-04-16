@@ -11,6 +11,17 @@
 
 <title>{% block title %}Education Judge{% endblock %}</title>
 
+<script type="text/javascript">
+let judge = {
+  api: `${location.protocol}//${location.hostname}:${location.port}/api`,
+  version: '{{ judge_version }}'{% if user.is_authenticated %},
+  user: {
+    first_name: '{{ user.first_name }}',
+    last_name: '{{ user.last_name }}',
+    username: '{{ user.username }}'
+  }{% endif %}
+};
+</script>
 <script src="/static/angular.min.js"></script>
 <script src="/static/angular-route.min.js"></script>
 <script src="/static/ui-bootstrap-tpls-2.5.0.min.js"></script>
@@ -20,9 +31,7 @@
 <script src="/static/app.js"></script>
 </head>
 <body ng-controller="baseCtrl">
-  <div class="messenger" ng-show="status_message">
-  {% verbatim %} {{ status_message }} {% endverbatim %}
-  </div>
+  <div class="messenger" ng-show="status_message" ng-bind="status_message"></div>
   <div class="nav-wrapper-self" ng-controller="headerCtrl">
     <nav class="navbar navbar-default">
       <div class="container">
@@ -32,15 +41,17 @@
         {% if user.is_authenticated %}
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
-            <li><a href="/tasks">Список задач</a></li>
-            <li><a href="/tasks/new">Добавить задачу</a></li>
+            <li><a href="/tasks">Список задач</a></li>{% if user.is_staff %}
+            <li><a href="/tasks/new">Добавить задачу</a></li>{% endif %}
           </ul>
           <ul class="nav navbar-nav navbar-right">
             <li class="dropdown" uib-dropdown>
               <a href="#"
-                  role="button" class="dropdown-toggle" uib-dropdown-toggle>{{ user.first_name }} {{ user.last_name }}<span class="caret"></span></a>
+                  role="button" class="dropdown-toggle" uib-dropdown-toggle>
+                  <span ng-bind="name"></span>
+                  <span class="caret"></span></a>
               <ul class="dropdown-menu" uib-dropdown-menu>
-                <li><a href="/user/{{ user.username }}">Моя страница</a></li>
+                <li><a ng-href="/user/{% verbatim %}{{ user.username }}{% endverbatim %}">Моя страница</a></li>
                 <li role="separator" class="divider"></li>
                 <li><a href="/auth/logout">Выйти</a></li>
               </ul>

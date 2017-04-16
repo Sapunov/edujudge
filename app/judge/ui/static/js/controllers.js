@@ -1,4 +1,7 @@
 function BaseCtrl($scope, $timeout, $http) {
+
+    $scope.judge_version = judge.version;
+
     $scope.status_message = '';
     $scope.solved_statuses = {
         '-1': 'hide',
@@ -30,7 +33,11 @@ function BaseCtrl($scope, $timeout, $http) {
     }
 }
 
-function HeaderCtrl($scope, $timeout) { }
+function HeaderCtrl($scope, $timeout) {
+
+    $scope.user = judge.user;
+    $scope.name = judge.user.first_name + ' ' + judge.user.last_name;
+}
 
 function IndexCtrl($scope, $http) {
 
@@ -169,4 +176,23 @@ function TaskCtrl($scope, $http, $routeParams, $interval) {
 
 function UserPageCtrl($scope, $http) {
 
+    $scope.name = judge.user.first_name + ' ' + judge.user.last_name;
+    $scope.solved_statuses = {
+        '-1': 'progress-bar-item pull-left',
+        '0': 'progress-bar-item pull-left red-bg',
+        '1': 'progress-bar-item pull-left green-bg',
+    }
+
+    $scope.tasks = [];
+
+    function loadTasks() {
+        $http.get(judge.api + '/tasks')
+        .then(function(response) {
+            if ( response.status === 200 ) {
+                $scope.tasks = response.data;
+            }
+        });
+    }
+
+    loadTasks();
 }

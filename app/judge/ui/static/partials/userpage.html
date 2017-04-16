@@ -1,1 +1,17 @@
-<h1>Страница пользователя</h1>
+<h2>{{ name }}</h2>
+
+<div class="container">
+  <div class="row">
+    <h3>
+      <span class="glyphicon glyphicon-signal progress-icon"></span>
+      Прогресс по задачам
+    </h3>
+    <div class="col-md-6 clearfix progress-bar-wrapper">
+      <div ng-repeat="task in tasks"
+        ng-class="solved_statuses[task.solved]"
+        title="{{ task.title }}">
+        <a class="progress-bar-link" ng-href="/tasks/{{ task.id }}">{{ task.id }}</a>
+      </div>
+    </div>
+  </div>
+</div>

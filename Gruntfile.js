@@ -9,7 +9,6 @@ module.exports = function(grunt) {
         dist: {
           src: [
             'app/judge/ui/static/js/common.js',
-            'app/judge/ui/static/js/init.js',
             'app/judge/ui/static/js/controllers.js',
             'app/judge/ui/static/js/app.js',
             'app/judge/ui/static/js/directives.js'
