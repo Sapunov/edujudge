@@ -14,5 +14,5 @@ RUN apt-get update \
 	&& apt-get upgrade -y
 
 RUN apt-get install -y python python3 \
-		python3-pip python3-dev nginx supervisor uwsgi-plugin-python3 \
+		python3-pip python3-dev nginx supervisor uwsgi-plugin-python3 vim \
 	&& pip3 install -U pip uwsgi
