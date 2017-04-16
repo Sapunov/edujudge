@@ -5,7 +5,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_DIR = os.path.join('/var/lib/', NAME, 'data')
 VERSION = '0.0.1'
 
-SECRET_KEY = 'somestrongpassword'
+SECRET_KEY = 'somestrongdjangokey'
 
 DEBUG = True
 
@@ -75,7 +75,7 @@ else:
             'ENGINE':   'django.db.backends.postgresql_psycopg2',
             'NAME':     'db',
             'USER':     'dba',
-            'PASSWORD': 'somestrongpassword',
+            'PASSWORD': 'somestrongdbpassword',
             'HOST':     'postgres',
             'PORT':     '5432',
         },
