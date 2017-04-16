@@ -1,4 +1,4 @@
-FROM judge-ubuntu
+FROM judge-ubuntu:16.04
 
 RUN apt-get install -y nginx supervisor
 

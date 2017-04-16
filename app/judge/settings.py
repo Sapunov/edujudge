@@ -6,7 +6,7 @@ DATA_DIR = os.path.join('/var/lib/', NAME, 'data')
 
 SECRET_KEY = 'somestrongpassword'
 
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -60,6 +60,14 @@ if DEBUG:
             'NAME': os.path.join(DATA_DIR, 'db.sqlite3'),
         }
     }
+
+    RQ_QUEUES = {
+        'default': {
+            'HOST': 'localhost',
+            'PORT': 6379,
+            'DB': 0,
+        }
+    }
 else:
     DATABASES = {
         'default': {
@@ -70,6 +78,14 @@ else:
             'HOST':     'postgres',
             'PORT':     '5432',
         },
+    }
+
+    RQ_QUEUES = {
+        'default': {
+            'HOST': 'redisserver',
+            'PORT': 6379,
+            'DB': 0,
+        }
     }
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -102,15 +118,6 @@ STATIC_URL = '/static/'
 LOGIN_URL = '/auth/login'
 
 SOURCE_DIR = os.path.join(DATA_DIR, 'user_sources')
-
-RQ_QUEUES = {
-    'default': {
-        'HOST': 'redisserver',
-        'PORT': 6379,
-        'DB': 0,
-    }
-}
-
 
 TEST_ERRORS = [
     'Полное решение',
