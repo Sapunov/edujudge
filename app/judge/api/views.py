@@ -1,8 +1,10 @@
 import django_rq
+from django.contrib.auth.models import User
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError
+
 from judge.api import serializers
 from judge.api.serializers import serialize, deserialize
 from judge.api.testsystem import test_solution
@@ -14,7 +16,20 @@ class TasksListView(APIView):
 
     def get(self, request, format=None):
 
-        tasks = Task.all_with_user_solution(request.user)
+        data = deserialize(
+            serializers.UserInParamsSerializer,
+            request.query_params
+        ).data
+
+        if 'user' in data:
+            try:
+                user = User.objects.get(username=data['user'])
+            except User.DoesNotExist:
+                return Response(status=status.HTTP_404_NOT_FOUND)
+        else:
+            user = request.user
+
+        tasks = Task.all_with_user_solution(user)
         serializer = serialize(serializers.TasksListSerializer, tasks, many=True)
 
         return Response(serializer.data)
@@ -90,5 +105,18 @@ class SolutionsListView(APIView):
 
         serializer = serialize(
             serializers.SolutionsListSerializer, solutions, many=True)
+
+        return Response(serializer.data)
+
+class UserPageView(APIView):
+
+    def get(self, request, username, format=None):
+
+        try:
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        serializer = serialize(serializers.UserSerializer, user)
 
         return Response(serializer.data)

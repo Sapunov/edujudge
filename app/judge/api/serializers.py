@@ -1,5 +1,6 @@
 from rest_framework import serializers
 
+from django.contrib.auth.models import User
 from judge.api.models import Task, Test, Example, Solution
 
 
@@ -105,6 +106,11 @@ class SolutionsListParamsSerializer(serializers.Serializer):
     task_id = serializers.IntegerField()
 
 
+class UserInParamsSerializer(serializers.Serializer):
+
+    user = serializers.CharField(required=False)
+
+
 class SolutionsListSerializer(serializers.Serializer):
 
     task_id = serializers.PrimaryKeyRelatedField(read_only=True)
@@ -128,3 +134,10 @@ class TaskOnlySerializer(serializers.Serializer):
     notes = serializers.CharField()
     timelimit = serializers.IntegerField()
     solved = serializers.IntegerField()
+
+
+class UserSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = ('id', 'username', 'first_name', 'last_name')

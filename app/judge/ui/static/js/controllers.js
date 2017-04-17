@@ -174,9 +174,9 @@ function TaskCtrl($scope, $http, $routeParams, $interval) {
 }
 
 
-function UserPageCtrl($scope, $http) {
+function UserPageCtrl($scope, $http, $routeParams) {
 
-    $scope.name = judge.user.first_name + ' ' + judge.user.last_name;
+    $scope.user = null;
     $scope.solved_statuses = {
         '-1': 'progress-bar-item pull-left',
         '0': 'progress-bar-item pull-left red-bg',
@@ -185,8 +185,8 @@ function UserPageCtrl($scope, $http) {
 
     $scope.tasks = [];
 
-    function loadTasks() {
-        $http.get(judge.api + '/tasks')
+    function loadTasks(username) {
+        $http.get(judge.api + '/tasks?user=' + username)
         .then(function(response) {
             if ( response.status === 200 ) {
                 $scope.tasks = response.data;
@@ -194,5 +194,15 @@ function UserPageCtrl($scope, $http) {
         });
     }
 
-    loadTasks();
+    function loadUser(username) {
+        $http.get(judge.api + '/users/' + username)
+        .then(function(response) {
+            if ( response.status === 200 ) {
+                $scope.user = response.data;
+            }
+        });
+    }
+
+    loadUser($routeParams.username);
+    loadTasks($routeParams.username);
 }
