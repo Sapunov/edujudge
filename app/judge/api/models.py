@@ -19,7 +19,7 @@ class Task(models.Model):
     @classmethod
     def all_with_user_solution(cls, user):
 
-        tasks = cls.objects.all()
+        tasks = cls.objects.all().order_by('id')
         for i in range(len(tasks)):
             solutions = tasks[i].solutions.filter(user=user).order_by('error')
             if solutions.count() == 0:
