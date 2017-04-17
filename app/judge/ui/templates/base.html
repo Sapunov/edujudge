@@ -3,13 +3,27 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<base href="/">
 <meta http-equiv="X-UA-Compatible" content="ie=edge">
+<title>{% block title %}Education Judge{% endblock %}</title>
+
+<base href="/">
+
+<!-- Styles -->
 <link rel="stylesheet" href="/static/bootstrap.min.css">
 <link rel="stylesheet" href="/static/style.css">
 <link rel="stylesheet" href="/static/codemirror.css">
 
-<title>{% block title %}Education Judge{% endblock %}</title>
+<!-- Scripts -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    showProcessingMessages: false,
+    tex2jax: { inlineMath: [['$','$'],['\\(','\\)']] },
+    TeX: {
+      extensions: ['cancel.js']
+    }
+  });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
 <script type="text/javascript">
 let judge = {

@@ -3,15 +3,15 @@
 
   <div>
     <h3>Описание</h3>
-    {{ task.description }}
+    <p mathjax-bind="task.description"></p>
   </div>
   <div>
     <h3>Исходные данные</h3>
-    {{ task.initial_data }}
+    <p mathjax-bind="task.initial_data"></p>
   </div>
   <div>
     <h3>Результат</h3>
-    {{ task.result }}
+    <p mathjax-bind="task.result"></p>
   </div>
   <div>
     <h3>Ограничения</h3>
@@ -38,7 +38,7 @@
   </div>
   <div ng-show="task.notes">
     <h3>Примечания</h3>
-    {{ task.notes }}
+    <p mathjax-bind="task.notes"></p>
   </div>
   <div>
     <h3>Отправить решение</h3>
