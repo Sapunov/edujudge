@@ -10,7 +10,7 @@
 
 <!-- Styles -->
 <link rel="stylesheet" href="/static/bootstrap.min.css">
-<link rel="stylesheet" href="/static/style.css">
+<link rel="stylesheet" href="/static/style.css?v={{ judge_version }}">
 <link rel="stylesheet" href="/static/codemirror.css">
 
 <!-- Scripts -->
@@ -42,7 +42,7 @@ let judge = {
 <script src="/static/codemirror.js"></script>
 <script src="/static/python.js"></script>
 <script src="/static/ui-codemirror.min.js"></script>
-<script src="/static/app.js"></script>
+<script src="/static/app.js?v={{ judge_version }}"></script>
 </head>
 <body ng-controller="baseCtrl">
   <div class="messenger" ng-show="status_message" ng-bind="status_message"></div>
