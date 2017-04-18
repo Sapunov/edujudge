@@ -230,27 +230,27 @@ function UserPageCtrl($scope, $http, $routeParams) {
             $routeProvider
 
             .when('/', {
-                templateUrl: 'static/partials/index.html',
+                templateUrl: 'static/partials/index.html?v=' + judge.version,
                 controller: 'indexCtrl'
             })
 
             .when('/tasks/new', {
-                templateUrl: 'static/partials/edittask.html',
+                templateUrl: 'static/partials/edittask.html?v=' + judge.version,
                 controller: 'taskeditCtrl'
             })
 
             .when('/tasks/:taskId', {
-                templateUrl: 'static/partials/task.html',
+                templateUrl: 'static/partials/task.html?v=' + judge.version,
                 controller: 'taskCtrl'
             })
 
             .when('/tasks', {
-                templateUrl: 'static/partials/tasklist.html',
+                templateUrl: 'static/partials/tasklist.html?v=' + judge.version,
                 controller: 'tasklistCtrl'
             })
 
             .when('/user/:username', {
-                templateUrl: 'static/partials/userpage.html',
+                templateUrl: 'static/partials/userpage.html?v=' + judge.version,
                 controller: 'userpageCtrl'
             })
 

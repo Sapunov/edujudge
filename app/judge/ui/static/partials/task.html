@@ -3,15 +3,15 @@
 
   <div>
     <h3>Описание</h3>
-    <p mathjax-bind="task.description"></p>
+    <p mathjax-bind="task.description" class="pre-line"></p>
   </div>
   <div>
     <h3>Исходные данные</h3>
-    <p mathjax-bind="task.initial_data"></p>
+    <p mathjax-bind="task.initial_data" class="pre-line"></p>
   </div>
   <div>
     <h3>Результат</h3>
-    <p mathjax-bind="task.result"></p>
+    <p mathjax-bind="task.result" class="pre-line"></p>
   </div>
   <div>
     <h3>Ограничения</h3>
@@ -38,7 +38,7 @@
   </div>
   <div ng-show="task.notes">
     <h3>Примечания</h3>
-    <p mathjax-bind="task.notes"></p>
+    <p mathjax-bind="task.notes" class="pre-line"></p>
   </div>
   <div>
     <h3>Отправить решение</h3>
@@ -74,7 +74,6 @@
   </div>
   <div ng-show="solutions">
     <h3>Последние решения</h3>
-
     <uib-accordion close-others="(true)">
       <div uib-accordion-group class="panel-default"
         ng-repeat="solution in solutions">
@@ -108,6 +107,5 @@
         </div>
       </div>
     </uib-accordion>
-
   </div>
 </div>
