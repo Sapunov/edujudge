@@ -7,10 +7,11 @@ from django.contrib.auth import login, logout, authenticate
 @login_required
 def indexView(request):
 
-    return render(request, 'main.html', {
+    context = {
         'judge_version': settings.VERSION
-        }
-    )
+    }
+
+    return render(request, 'main.html', context)
 
 
 def logoutView(request):
@@ -24,7 +25,8 @@ def loginView(request):
 
     context = {
         'loginpage': settings.LOGIN_URL,
-        'error_message': None
+        'error_message': None,
+        'judge_version': settings.VERSION
     }
 
     if request.method == 'POST':

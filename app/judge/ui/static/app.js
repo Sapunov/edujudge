@@ -35,8 +35,10 @@
 
 function HeaderCtrl($scope, $timeout) {
 
-    $scope.user = judge.user;
-    $scope.name = judge.user.first_name + ' ' + judge.user.last_name;
+    if ( judge.user !== undefined ) {
+        $scope.user = judge.user;
+        $scope.name = judge.user.first_name + ' ' + judge.user.last_name;
+    }
 }
 
 function IndexCtrl($scope, $http) {
