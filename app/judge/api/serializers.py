@@ -140,4 +140,17 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('id', 'username', 'first_name', 'last_name')
+        fields = ('id', 'username', 'first_name', 'last_name', 'is_staff')
+
+
+class IMMessagesSerializer(serializers.Serializer):
+
+    msg_type = serializers.CharField()
+    alert_msg = serializers.CharField(allow_null=True)
+    payload = serializers.JSONField()
+
+
+class IMSerializer(serializers.Serializer):
+
+    count_messages = serializers.IntegerField()
+    messages = IMMessagesSerializer(many=True)

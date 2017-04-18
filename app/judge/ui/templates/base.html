@@ -65,7 +65,7 @@ let judge = {
                   <span ng-bind="name"></span>
                   <span class="caret"></span></a>
               <ul class="dropdown-menu" uib-dropdown-menu>
-                <li><a ng-href="/user/{% verbatim %}{{ user.username }}{% endverbatim %}">Моя страница</a></li>
+                <li><a ng-href="/users/{% verbatim %}{{ user.username }}{% endverbatim %}">Моя страница</a></li>
                 <li role="separator" class="divider"></li>
                 <li><a href="/auth/logout">Выйти</a></li>
               </ul>

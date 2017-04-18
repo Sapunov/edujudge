@@ -39,7 +39,7 @@
                 controller: 'tasklistCtrl'
             })
 
-            .when('/user/:username', {
+            .when('/users/:username', {
                 templateUrl: 'static/partials/userpage.html?v=' + judge.version,
                 controller: 'userpageCtrl'
             })

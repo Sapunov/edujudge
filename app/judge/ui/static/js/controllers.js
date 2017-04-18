@@ -1,4 +1,4 @@
-function BaseCtrl($scope, $timeout, $http) {
+function BaseCtrl($scope, $timeout, $http, $interval) {
 
     $scope.judge_version = judge.version;
 
@@ -25,12 +25,38 @@ function BaseCtrl($scope, $timeout, $http) {
         }, 30 * 1000);
     }
 
-    $scope.get_from_queue = function(qid, callback) {
-        $http.get(judge.api + '/queue/' + qid)
-        .then(function(response) {
-            callback(response);
-        });
+    function instant_messages() {
+
+        if ( judge.user === undefined ) return;
+
+        $interval(function() {
+            $http.get(judge.api + '/im')
+            .then(function(response) {
+                if ( response.status === 200 ) {
+                    let msgs = response.data.messages,
+                        data;
+
+                    for ( let i = 0; i < msgs.length; ++i ) {
+                        if ( msgs[i].alert_msg !== null ) {
+                            $scope.say(msgs[i].alert_msg);
+                        }
+
+                        try {
+                            data = JSON.parse(msgs[i].payload);
+                            $scope.$broadcast('im', {
+                                type: msgs[i].msg_type,
+                                data: data
+                            });
+                        } catch (e) {
+                            console.log(e);
+                        }
+                    }
+                }
+            });
+        }, 2000);
     }
+
+    instant_messages();
 }
 
 function HeaderCtrl($scope, $timeout) {
@@ -108,29 +134,28 @@ function TaskCtrl($scope, $http, $routeParams, $interval) {
             source: $scope.source
         }).then(function(response) {
             if ( response.status === 200 ) {
-                interval_check(response.data.qid);
                 $scope.say('Решение отправлено на проверку');
             }
         });
     }
 
-    function interval_check(qid) {
+    $scope.$on('im', function(event, data) {
 
-        $scope.intval = $interval(function() {
-            $scope.get_from_queue(qid, function(response) {
-                if ( response.data.finished ) {
-                    let msg = (response.data.result.error === 0) ? 'Все правильно!' : 'Есть ошибки :=(';
+        switch ( data.type ) {
+            case 'test_complete':
+                test_complete(data.data);
+                break;
+        }
 
-                    $interval.cancel($scope.intval);
-                    $scope.say('Задание ' + response.data.result.task_id + ' проверено. ' + msg);
+    });
 
-                    $scope.result = response.data.result;
 
-                    load_solutions();
-                    toogle_editing();
-                }
-            });
-        }, 1000);
+    function test_complete(data) {
+
+        $scope.result = data;
+
+        load_solutions();
+        toogle_editing();
     }
 
     function toogle_editing() {
@@ -186,6 +211,7 @@ function UserPageCtrl($scope, $http, $routeParams) {
     }
 
     $scope.tasks = [];
+    $scope.students = null;
 
     function loadTasks(username) {
         $http.get(judge.api + '/tasks?user=' + username)
@@ -205,6 +231,19 @@ function UserPageCtrl($scope, $http, $routeParams) {
         });
     }
 
+    function loadStudents() {
+        $http.get(judge.api + '/users')
+        .then(function(response) {
+            if ( response.status === 200 && response.data.length > 0 ) {
+                $scope.students = response.data;
+            }
+        });
+    }
+
     loadUser($routeParams.username);
     loadTasks($routeParams.username);
+
+    if ( $routeParams.username == judge.user.username ) {
+        loadStudents();
+    }
 }

@@ -1,8 +1,11 @@
 import re
 import logging
 from subprocess import PIPE, Popen, TimeoutExpired
+
 from django.conf import settings
+
 from judge.api.models import Solution
+from judge.api.im import send_message
 
 log = logging.getLogger('main.' + __name__)
 
@@ -71,8 +74,6 @@ def test_solution(solution_id):
             timelimit
         )
 
-        log.debug('error_code: %s, output: %s', error_code, output)
-
         if error_code != 0 or not match_solutions(output, test.answer):
             solution.test = test
             solution.testnum = i + 1
@@ -94,9 +95,7 @@ def test_solution(solution_id):
     else:
         test_input = None
 
-    log.debug('After - error_code: %s, verdict: %s', solution.error, solution.verdict)
-
-    return {
+    msg = {
         'error': solution.error,
         'error_description': settings.TEST_ERRORS[solution.error],
         'verdict': solution.verdict,
@@ -104,3 +103,12 @@ def test_solution(solution_id):
         'task_id': solution.task.id,
         'test': test_input
     }
+
+    verdict = 'Все правильно!' if solution.error == 0 else 'Есть ошибки :=('
+
+    send_message(
+        user_id=solution.user.id,
+        msg_type='test_complete',
+        message=msg,
+        alert_msg='Задание {0} проверено. {1}'.format(solution.task.id, verdict)
+    )

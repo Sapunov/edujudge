@@ -3,7 +3,7 @@ import os
 NAME = 'judge'
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_DIR = os.path.join('/var/lib/', NAME, 'data')
-VERSION = '0.1.2'
+VERSION = '0.2.0'
 
 SECRET_KEY = 'somestrongdjangokey'
 
@@ -34,7 +34,9 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+
 ROOT_URLCONF = 'judge.urls'
+
 
 TEMPLATES = [
     {
@@ -52,7 +54,9 @@ TEMPLATES = [
     },
 ]
 
+
 WSGI_APPLICATION = 'judge.wsgi.application'
+
 
 if DEBUG:
     DATABASES = {
@@ -62,13 +66,7 @@ if DEBUG:
         }
     }
 
-    RQ_QUEUES = {
-        'default': {
-            'HOST': 'localhost',
-            'PORT': 6379,
-            'DB': 0,
-        }
-    }
+    REDIS_HOST = 'localhost'
 else:
     DATABASES = {
         'default': {
@@ -81,13 +79,21 @@ else:
         },
     }
 
-    RQ_QUEUES = {
-        'default': {
-            'HOST': 'redisserver',
-            'PORT': 6379,
-            'DB': 0,
-        }
+    REDIS_HOST = 'redisserver'
+
+
+REDIS_PORT = 6379
+REDIS_DB = 0
+
+
+RQ_QUEUES = {
+    'default': {
+        'HOST': REDIS_HOST,
+        'PORT': REDIS_PORT,
+        'DB': REDIS_DB,
     }
+}
+
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -169,3 +175,8 @@ REST_FRAMEWORK = {
 }
 
 STATIC_ROOT = os.path.join(DATA_DIR, 'static')
+
+IM_REDIS_PREFIX = 'judge:im'
+
+# How many seconds IM message stores in redis
+IM_REDIS_EX = 5
