@@ -122,6 +122,7 @@ class UserInParamsSerializer(serializers.Serializer):
 
 class SolutionsListSerializer(serializers.Serializer):
 
+    id = serializers.IntegerField()
     task_id = serializers.PrimaryKeyRelatedField(read_only=True)
     test = serializers.SlugRelatedField(slug_field='text', read_only=True)
     testnum = serializers.IntegerField()

@@ -80,7 +80,7 @@
         ng-repeat="solution in solutions">
         <uib-accordion-heading>
           <span ng-class="solved_statuses[(solution.error > 0) ? '0' : 1]" aria-hidden="true"></span>
-          <span>{{ solution.error_description }}</span>
+          <span>#{{ solution.id }} {{ solution.error_description }}</span>
           <small>{{ solution.time }}</small>
         </uib-accordion-heading>
         <div ng-show="solution.testnum > 0">
