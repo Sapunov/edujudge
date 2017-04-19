@@ -48,13 +48,17 @@
       <div class="row test-item" ng-repeat="i in getArray(numOfExamples) track by $index">
         <div class="col-xs-6">
           <textarea class="form-control tarea no-resize"
-                    ng-model="task.examples[$index]['text']"
-                    placeholder="Входные данные" required></textarea>
+            ng-model="task.examples[$index]['text']"
+            placeholder="Входные данные" required></textarea>
         </div>
-        <div class="col-xs-6">
+        <div class="col-xs-5">
           <textarea class="form-control tarea no-resize"
-                    ng-model="task.examples[$index]['answer']"
-                    placeholder="Выходные данные" required></textarea>
+            ng-model="task.examples[$index]['answer']"
+            placeholder="Выходные данные" required></textarea>
+        </div>
+        <div class="col-xs-1 t-a-r">
+          <span class="glyphicon glyphicon-remove item-delete"
+            uib-tooltip="Удалить пример" ng-click="deleteExample($index)"></span>
         </div>
       </div>
     </div>
@@ -82,27 +86,33 @@
         <div class="row test-item" ng-repeat="i in getArray(numOfTests) track by $index">
           <div class="col-xs-6">
             <textarea class="form-control tarea no-resize"
-                      ng-model="task.tests[$index]['text']"
-                      placeholder="Тест" required></textarea>
+              ng-model="task.tests[$index]['text']"
+              placeholder="Тест" required></textarea>
           </div>
-          <div class="col-xs-6">
+          <div class="col-xs-5">
             <textarea class="form-control tarea no-resize"
-                      ng-model="task.tests[$index]['answer']"
-                      placeholder="Ответ" required></textarea>
+              ng-model="task.tests[$index]['answer']"
+              placeholder="Ответ" required></textarea>
+          </div>
+          <div class="col-xs-1 t-a-r">
+            <span class="glyphicon glyphicon-remove item-delete"
+              uib-tooltip="Удалить тест" ng-click="deleteTest($index)"></span>
           </div>
         </div>
       </div>
       <a href="#" id="add-test-link" ng-click="numOfTests = numOfTests + 1">Добавить тест</a>
     </div>
     <div ng-show="codeTab">
-      <div class="task-area-wrapper">
-        <textarea class="task-area" ui-codemirror="codeMirror"
-          ng-model="source" ng-disabled="sent"></textarea>
-      </div>
-      <div class="form-group btn-area">
-        <button class="btn btn-success"
-          ng-click="generateTests($event)"
-          ng-disabled="generateForm.$invalid || sent">Сгенерировать тесты</button>
+      <div class="tests">
+        <div class="task-area-wrapper">
+          <textarea class="task-area" ui-codemirror="codeMirror"
+            ng-model="source" ng-disabled="sent"></textarea>
+        </div>
+        <div class="form-group btn-area">
+          <button class="btn btn-success"
+            ng-click="generateTests($event)"
+            ng-disabled="generateForm.$invalid || sent">Сгенерировать тесты</button>
+        </div>
       </div>
     </div>
   </div>

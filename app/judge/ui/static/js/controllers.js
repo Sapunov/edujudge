@@ -31,8 +31,6 @@ function BaseCtrl($scope, $timeout, $http, $interval) {
 
     $scope.errorHandler = function(response) {
 
-        console.log(response);
-
         switch ( response.status ) {
             case 404:
                 $scope.say_error('Ресурс не найден');
@@ -73,7 +71,7 @@ function BaseCtrl($scope, $timeout, $http, $interval) {
                         }
                     }
                 }
-            });
+            }, function(response) {});
         }, 2000);
     }
 
@@ -113,6 +111,7 @@ function TaskListCtrl($scope, $http) {
 function TaskEditCtrl($scope, $http) {
 
     $scope.numOfTests = 1;
+    $scope.numOfExamples = 1;
     $scope.task = {};
     $scope.task.timelimit = 1;
     $scope.task.tests = [];
@@ -125,11 +124,14 @@ function TaskEditCtrl($scope, $http) {
     }
     $scope.sent = false;
 
+    $scope.source = generator_skeleton;
+
     $scope.getArray = function(num) {
         return new Array(num);
     }
 
     $scope.saveTask = function() {
+
         $http.post(judge.api + '/tasks', $scope.task)
         .then(function(response) {
             if ( response.status === 200 ) {
@@ -140,23 +142,39 @@ function TaskEditCtrl($scope, $http) {
         }, $scope.errorHandler);
     }
 
+    $scope.deleteExample = function(index) {
+
+        if ( $scope.numOfExamples > 1 ) {
+            for ( let i = index; i <= $scope.numOfExamples; ++i ) {
+                $scope.task.examples[i] = $scope.task.examples[i + 1];
+            }
+
+            delete $scope.task.examples[$scope.numOfExamples - 1];
+            $scope.numOfExamples--;
+        } else {
+            $scope.say('Нельзя удалять все примеры');
+        }
+    }
+
+    $scope.deleteTest = function(index) {
+
+        if ( $scope.numOfTests > 1 ) {
+            for ( let i = index; i <= $scope.numOfTests; ++i ) {
+                $scope.task.tests[i] = $scope.task.tests[i + 1];
+            }
+
+            delete $scope.task.tests[$scope.numOfTests - 1];
+            $scope.numOfTests--;
+        } else {
+            $scope.say('Нельзя удалять все тесты');
+        }
+    }
+
     $scope.generateTests = function(event) {
 
         event.preventDefault();
         event.stopPropagation();
     }
-
-    function load_generator_skeleton() {
-
-        $http.get('/static/partials/testgeneratorskeleton.txt')
-        .then(function(response) {
-            if ( response.status === 200 ) {
-                $scope.source = response.data;
-            }
-        }, $scope.errorHandler);
-    }
-
-    load_generator_skeleton();
 }
 
 
