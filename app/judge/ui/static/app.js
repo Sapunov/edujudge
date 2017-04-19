@@ -117,6 +117,13 @@ function TaskEditCtrl($scope, $http) {
     $scope.task.timelimit = 1;
     $scope.task.tests = [];
     $scope.task.examples = [];
+    $scope.codeTab = false;
+    $scope.codeMirror = {
+        lineNumbers: true,
+        mode: 'python',
+        readOnly: false
+    }
+    $scope.sent = false;
 
     $scope.getArray = function(num) {
         return new Array(num);
@@ -132,6 +139,24 @@ function TaskEditCtrl($scope, $http) {
             }
         }, $scope.errorHandler);
     }
+
+    $scope.generateTests = function(event) {
+
+        event.preventDefault();
+        event.stopPropagation();
+    }
+
+    function load_generator_skeleton() {
+
+        $http.get('/static/partials/testgeneratorskeleton.txt')
+        .then(function(response) {
+            if ( response.status === 200 ) {
+                $scope.source = response.data;
+            }
+        }, $scope.errorHandler);
+    }
+
+    load_generator_skeleton();
 }
 
 

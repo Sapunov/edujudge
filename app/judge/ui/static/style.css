@@ -456,3 +456,27 @@ input.ng-dirty.ng-invalid {
   padding-bottom: 5px;
   padding-left: 5px;
 }
+
+.test-edit-tabs-links {
+  margin-left: 20px;
+}
+
+.test-edit-tabs-links a {
+  margin-right: 5px;
+}
+
+.test-edit-tabs-links a.active {
+  color: black;
+}
+
+.test-edit-tabs-links a.active:hover {
+  text-decoration: none;
+}
+
+.test-edit-tabs-links a.active:focus {
+  text-decoration: none;
+}
+
+.test-edit-tabs-links a.active:active {
+  text-decoration: none;
+}

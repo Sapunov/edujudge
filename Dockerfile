@@ -8,7 +8,7 @@ COPY app /var/www/app/
 COPY deploy/judge/django_key /root/django_key
 COPY deploy/judge/db_password /root/db_password
 
-RUN mkdir -p /var/lib/judge/data/logs /var/lib/judge/data/user_sources /var/lib/judge/data/static \
+RUN mkdir -p /var/lib/judge/data/logs /var/lib/judge/data/user_sources /var/lib/judge/data/static /var/lib/judge/data/test_generators \
     && rm /etc/nginx/sites-enabled/default \
     && ln -s /etc/nginx/sites-available/app.conf /etc/nginx/sites-enabled/app.conf \
     && echo "daemon off;" >> /etc/nginx/nginx.conf \

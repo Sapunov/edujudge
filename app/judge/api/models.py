@@ -15,6 +15,8 @@ class Task(models.Model):
     notes = models.TextField(null=True, blank=True)
     timelimit = models.SmallIntegerField()
     author = models.ForeignKey(User, on_delete=models.PROTECT, related_name='+')
+    test_generator_path = models.FilePathField(
+        path=settings.TEST_GENERATORS_DIR, blank=True, null=True)
 
     @classmethod
     def all_with_user_solution(cls, user):
