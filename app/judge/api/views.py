@@ -183,7 +183,7 @@ class CommentsView(APIView):
 
         serializer = deserialize(serializers.CommentSerializer, data=request.data)
 
-        if request.user.username != serializer.data['username']:
+        if request.user.username != serializer.validated_data['username']:
             if not request.user.is_staff:
                 return Response(status=status.HTTP_403_FORBIDDEN)
 
