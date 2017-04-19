@@ -164,7 +164,7 @@ class Comment(models.Model):
     task = models.ForeignKey(Task, on_delete=models.CASCADE)
     time = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(User, on_delete=models.PROTECT, related_name='+')
-    parent = models.ForeignKey('self')
+    task_owner = models.ForeignKey(User, on_delete=models.PROTECT, related_name='+')
     text = models.TextField()
 
     class Meta:

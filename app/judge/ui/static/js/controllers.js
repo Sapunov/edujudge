@@ -10,19 +10,40 @@ function BaseCtrl($scope, $timeout, $http, $interval) {
     }
 
     $scope.say = function(text) {
+
         $scope.status_message = text;
 
         $timeout(function() {
             $scope.status_message = '';
-        }, 3000);
+        }, 5 * 1000);
     }
 
     $scope.say_error = function(text) {
-        $scope.status_message = 'Произошла ошибка: ' + text;
+
+        text = text || 'Произошла ошибка';
+
+        $scope.status_message = text;
 
         $timeout(function() {
             $scope.status_message = '';
-        }, 30 * 1000);
+        }, 10 * 1000);
+    }
+
+    $scope.errorHandler = function(response) {
+
+        console.log(response);
+
+        switch ( response.status ) {
+            case 404:
+                $scope.say_error('Ресурс не найден');
+                break;
+            case 403:
+                $scope.say_error('У вас нет доступа к запрашиваемому ресурсу');
+                break;
+            default:
+                $scope.say_error();
+                break;
+        }
     }
 
     function instant_messages() {
@@ -59,6 +80,7 @@ function BaseCtrl($scope, $timeout, $http, $interval) {
     instant_messages();
 }
 
+
 function HeaderCtrl($scope, $timeout) {
 
     if ( judge.user !== undefined ) {
@@ -67,9 +89,9 @@ function HeaderCtrl($scope, $timeout) {
     }
 }
 
-function IndexCtrl($scope, $http) {
 
-}
+function IndexCtrl($scope, $http) {}
+
 
 function TaskListCtrl($scope, $http) {
 
@@ -81,11 +103,12 @@ function TaskListCtrl($scope, $http) {
             if ( response.status === 200 ) {
                 $scope.tasks = response.data;
             }
-        });
+        }, $scope.errorHandler);
     }
 
     loadTasks();
 }
+
 
 function TaskEditCtrl($scope, $http) {
 
@@ -107,14 +130,17 @@ function TaskEditCtrl($scope, $http) {
             } else {
                 $scope.say_error(response.data);
             }
-        });
+        }, $scope.errorHandler);
     }
 }
 
 
-function TaskCtrl($scope, $http, $routeParams, $interval) {
+function TaskCtrl($scope, $http, $routeParams, $location) {
 
     $scope.taskId = $routeParams.taskId;
+    $scope.username = $location.search().username || judge.user.username;
+    $scope.alienPage = false;
+
     $scope.task = null;
     $scope.solutions = null;
     $scope.codeMirror = {
@@ -136,7 +162,7 @@ function TaskCtrl($scope, $http, $routeParams, $interval) {
             if ( response.status === 200 ) {
                 $scope.say('Решение отправлено на проверку');
             }
-        });
+        }, $scope.errorHandler);
     }
 
     $scope.$on('im', function(event, data) {
@@ -171,39 +197,103 @@ function TaskCtrl($scope, $http, $routeParams, $interval) {
 
     function init() {
 
-        if ( $scope.task === null ) {
-            $http.get(judge.api + '/tasks/' + $scope.taskId)
-            .then(function(response) {
-                if ( response.status === 200 ) {
-                    $scope.task = response.data;
-
-                } else if ( response.status === 204 ) {
-                    $scope.say_error('Задание не найдено');
-                } else {
-                    $scope.say_error(response.data);
-                }
-            });
-
-            load_solutions();
+        if ( $scope.username !== undefined && $scope.username !== judge.user.username ) {
+            $scope.alienPage = true;
         }
+
+        $http.get(judge.api + '/tasks/' + $scope.taskId)
+        .then(function(response) {
+            if ( response.status === 200 ) {
+                $scope.task = response.data;
+            }
+        }, $scope.errorHandler);
+
+        load_solutions();
     }
 
     function load_solutions() {
-        $http.get(judge.api + '/solutions?task_id=' + $scope.taskId)
-        .then(function(response) {
+
+        let url = `/solutions?task_id=${$scope.taskId}&username=${$scope.username}`;
+
+        $http.get(judge.api + url).then(function(response) {
             if ( response.data.length > 0 ) {
                 $scope.solutions = response.data;
             }
-        });
+        }, $scope.errorHandler);
     }
 
     init();
 }
 
 
+function TaskCommentsCtrl($scope, $http) {
+
+    $scope.comments = [];
+    $scope.currentUser = judge.user.username;
+
+    $scope.saveComment = function() {
+
+        $http.post(judge.api + '/comments', {
+            'text': $scope.comment,
+            'task_id': $scope.taskId,
+            'username': $scope.username
+        }).then(function(response) {
+            if ( response.status === 200 ) {
+                prependComment(response.data);
+                $scope.comment = null;
+                $scope.commentForm.$setPristine();
+            }
+        }, $scope.errorHandler);
+    }
+
+    $scope.deleteComment = function(commentId) {
+
+        $http.delete(judge.api + '/comments/' + commentId)
+        .then(function(response) {
+            if ( response.status === 204 ) {
+                for ( let i = 0; i < $scope.comments.length; ++i ) {
+                    if ( $scope.comments[i].id === commentId ) {
+                        $scope.comments[i].deleted = true;
+                    }
+                }
+            }
+        }, $scope.errorHandler);
+    }
+
+    $scope.$on('im', function(event, data) {
+
+        switch ( data.type ) {
+            case 'new_comment':
+                prependComment(data.data);
+                break;
+        }
+    });
+
+    function prependComment(comment) {
+
+        $scope.comments.unshift(comment);
+    }
+
+    function loadComments() {
+
+        let url = `/comments?task_id=${$scope.taskId}&username=${$scope.username}`;
+
+        $http.get(judge.api + url)
+        .then(function(response) {
+            if ( response.status === 200 ) {
+                $scope.comments = response.data;
+            }
+        }, $scope.errorHandler);
+    }
+
+    loadComments();
+}
+
+
 function UserPageCtrl($scope, $http, $routeParams) {
 
     $scope.user = null;
+    $scope.alienPage = false;
     $scope.solved_statuses = {
         '-1': 'progress-bar-item pull-left',
         '0': 'progress-bar-item pull-left red-bg',
@@ -214,30 +304,33 @@ function UserPageCtrl($scope, $http, $routeParams) {
     $scope.students = null;
 
     function loadTasks(username) {
+
         $http.get(judge.api + '/tasks?user=' + username)
         .then(function(response) {
             if ( response.status === 200 ) {
                 $scope.tasks = response.data;
             }
-        });
+        }, $scope.errorHandler);
     }
 
     function loadUser(username) {
+
         $http.get(judge.api + '/users/' + username)
         .then(function(response) {
             if ( response.status === 200 ) {
                 $scope.user = response.data;
             }
-        });
+        }, $scope.errorHandler);
     }
 
     function loadStudents() {
+
         $http.get(judge.api + '/users')
         .then(function(response) {
             if ( response.status === 200 && response.data.length > 0 ) {
                 $scope.students = response.data;
             }
-        });
+        }, $scope.errorHandler);
     }
 
     loadUser($routeParams.username);
@@ -245,5 +338,7 @@ function UserPageCtrl($scope, $http, $routeParams) {
 
     if ( $routeParams.username == judge.user.username ) {
         loadStudents();
+    } else {
+        $scope.alienPage = true;
     }
 }

@@ -9,4 +9,6 @@ urlpatterns = [
     url(r'^users/(?P<username>[a-z]{0,50})$', views.UserPageView.as_view()),
     url(r'^users$', views.UsersView.as_view()),
     url(r'^im$', views.IMView.as_view()),
+    url(r'^comments$', views.CommentsView.as_view()),
+    url(r'^comments/(?P<comment_id>[0-9]{1,10})', views.CommentView.as_view()),
 ]

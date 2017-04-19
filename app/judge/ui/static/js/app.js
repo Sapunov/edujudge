@@ -8,6 +8,7 @@
     .controller('taskeditCtrl', TaskEditCtrl)
     .controller('taskCtrl', TaskCtrl)
     .controller('userpageCtrl', UserPageCtrl)
+    .controller('taskCommentsCtrl', TaskCommentsCtrl)
 
     // Configuring routes
     .config(['$locationProvider', '$routeProvider', '$httpProvider',

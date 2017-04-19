@@ -53,13 +53,17 @@ def get_user_messages(user_id):
 
 def send_message(user_id, msg_type, message, alert_msg=None):
 
-    data = pack_message({
-        'msg_type': msg_type,
-        'alert_msg': alert_msg,
-        'payload': message
-    })
+    if isinstance(user_id, list):
+        for uid in user_id:
+            send_message(uid, msg_type, message, alert_msg)
+    else:
+        data = pack_message({
+            'msg_type': msg_type,
+            'alert_msg': alert_msg,
+            'payload': message
+        })
 
-    key = '{0}:{1}:{2}'.format(
-        settings.IM_REDIS_PREFIX, user_id, data_hash(data))
+        key = '{0}:{1}:{2}'.format(
+            settings.IM_REDIS_PREFIX, user_id, data_hash(data))
 
-    connection.set(key, data, ex=settings.IM_REDIS_EX)
+        connection.set(key, data, ex=settings.IM_REDIS_EX)

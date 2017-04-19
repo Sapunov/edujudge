@@ -1,7 +1,9 @@
-from rest_framework import serializers
-
 from django.contrib.auth.models import User
-from judge.api.models import Task, Test, Example, Solution
+
+from rest_framework import serializers
+from rest_framework.exceptions import ValidationError, NotFound
+
+from judge.api.models import Task, Test, Example, Solution, Comment
 
 
 def deserialize(serializer_class, data):
@@ -104,6 +106,13 @@ class TaskCheckSerializer(serializers.Serializer):
 class SolutionsListParamsSerializer(serializers.Serializer):
 
     task_id = serializers.IntegerField()
+    username = serializers.CharField()
+
+
+class CommentsListParamsSerializer(serializers.Serializer):
+
+    task_id = serializers.IntegerField()
+    username = serializers.CharField()
 
 
 class UserInParamsSerializer(serializers.Serializer):
@@ -154,3 +163,41 @@ class IMSerializer(serializers.Serializer):
 
     count_messages = serializers.IntegerField()
     messages = IMMessagesSerializer(many=True)
+
+
+class CommentSerializer(serializers.Serializer):
+
+    id = serializers.IntegerField(required=False)
+    user = UserSerializer(required=False)
+    time = serializers.DateTimeField(format='%m-%d-%Y %H:%M:%S', required=False)
+    text = serializers.CharField()
+    task_id = serializers.IntegerField(required=False)
+    username = serializers.CharField(required=False)
+    task_owner = UserSerializer(required=False)
+
+    def create(self, validated_data):
+
+        if 'task_id' not in validated_data:
+            raise ValidationError({'task_id': ['This field is required.']})
+
+        if 'username' not in validated_data:
+            raise ValidationError({'username': ['This field is required.']})
+
+        try:
+            task = Task.objects.get(pk=validated_data['task_id'])
+        except Task.DoesNotExist:
+            raise NotFound
+
+        try:
+            owner = User.objects.get(username=validated_data['username'])
+        except User.DoesNotExist:
+            raise NotFound
+
+        comment = Comment.objects.create(
+            task=task,
+            user=validated_data['user'],
+            text=validated_data['text'],
+            task_owner=owner
+        )
+
+        return comment

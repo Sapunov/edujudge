@@ -381,20 +381,11 @@ input.ng-dirty.ng-invalid {
 }
 
 .progress-bar-item {
-  width: 40px;
-  text-align: center;
-  font-size: 14px;
-  line-height: 30px;
-  height: 30px;
-  border-top: 1px solid #F5F5F5;
-  border-left: 1px solid #F5F5F5;
-  border-bottom: 1px solid #F5F5F5;
-  border-right: none;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #F5F5F5;
   color: grey;
-}
-
-.progress-bar-item:last-child {
-  border-right: 1px solid #F5F5F5;
+  display: block;
 }
 
 .green-bg {
@@ -411,16 +402,57 @@ input.ng-dirty.ng-invalid {
   color: grey;
 }
 
-.progress-bar-link {
-  color: inherit !important;
-  text-decoration: none;
-}
-
-.progress-icon {
-  font-size: 18px;
-}
-
 .user-profile-image {
   width: 100%;
   max-width: 213px;
+}
+
+.comment-items {
+  margin-top: 30px;
+}
+
+.comment-item {
+  margin-bottom: 10px;
+  border-bottom: 1px solid #F5F5F5;
+}
+
+.comment-item:last-child {
+  margin-bottom: 0;
+  border-bottom: none;
+}
+
+.comment-item .userpic {
+  margin-right: 15px;
+}
+
+.comment-item .userpic img {
+  max-height: 50px;
+}
+
+.pos-rel {
+  position: relative;
+}
+
+.comment-delete {
+  color: #F5F5F5;
+  position: absolute;
+  top: 3px;
+  right: 0;
+  -webkit-transition: color 0.2s ease;
+  -moz-transition: color 0.2s ease;
+  -o-transition: color 0.2s ease;
+  transition: color 0.2s ease;
+  cursor: pointer;
+}
+
+.comment-delete:hover {
+  color: #dcdcdc;
+}
+
+.comment-deleted {
+  background-color: #f5f5f5;
+  color: #4b4b4b;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-left: 5px;
 }

@@ -16,11 +16,20 @@
           Прогресс по задачам
         </p>
         <div class="clearfix progress-bar-wrapper">
-          <div ng-repeat="task in tasks"
-            ng-class="solved_statuses[task.solved]"
-            title="{{ task.title }}">
-            <a class="progress-bar-link" ng-href="/tasks/{{ task.id }}">{{ task.id }}</a>
-          </div>
+            <span ng-switch on="alienPage && ! user.is_staff">
+              <span ng-switch-when="true">
+                <a ng-class="solved_statuses[task.solved]"
+                  uib-tooltip="{{ task.id }}. {{ task.title }}"
+                  ng-repeat="task in tasks"
+                  ng-href="/tasks/{{ task.id }}?username={{ user.username }}"></a>
+              </span>
+              <span ng-switch-when="false">
+                <a ng-class="solved_statuses[task.solved]"
+                  uib-tooltip="{{ task.id }}. {{ task.title }}"
+                  ng-repeat="task in tasks"
+                  ng-href="/tasks/{{ task.id }}"></a>
+              </span>
+            </span>
         </div>
       </div>
       <div ng-show="students">
