@@ -228,7 +228,7 @@ function TaskCtrl($scope, $http, $routeParams, $location) {
 
 function TaskCommentsCtrl($scope, $http) {
 
-    $scope.comments = [];
+    $scope.comments = null;
     $scope.currentUser = judge.user.username;
 
     $scope.saveComment = function() {
@@ -271,7 +271,11 @@ function TaskCommentsCtrl($scope, $http) {
 
     function prependComment(comment) {
 
-        $scope.comments.unshift(comment);
+        if ( $scope.comments === null ) {
+            $scope.comments = [comment];
+        } else {
+            $scope.comments.unshift();
+        }
     }
 
     function loadComments() {
@@ -280,7 +284,7 @@ function TaskCommentsCtrl($scope, $http) {
 
         $http.get(judge.api + url)
         .then(function(response) {
-            if ( response.status === 200 ) {
+            if ( response.status === 200 && response.data.length > 0 ) {
                 $scope.comments = response.data;
             }
         }, $scope.errorHandler);
