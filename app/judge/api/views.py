@@ -182,6 +182,11 @@ class CommentsView(APIView):
     def post(self, request, format=None):
 
         serializer = deserialize(serializers.CommentSerializer, data=request.data)
+
+        if request.user.username != serializer.data['username']:
+            if not request.user.is_staff:
+                return Response(status=status.HTTP_403_FORBIDDEN)
+
         comment = serializer.save(user=request.user)
 
         users = get_staff_ids(

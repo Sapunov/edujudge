@@ -33,7 +33,7 @@ class Task(models.Model):
 
     def __str__(self):
 
-        return self.title
+        return 'Task #{0}: {1}'.format(self.id, self.title)
 
     class Meta:
 
@@ -61,7 +61,7 @@ class Test(models.Model):
 
     def __str__(self):
 
-        return '<Test #{0} for {1} task>'.format(self.id, self.task.id)
+        return 'Test #{0} for task #{1}'.format(self.id, self.task.id)
 
     class Meta:
 
@@ -150,8 +150,8 @@ class Solution(models.Model):
 
     def __str__(self):
 
-        return '{0} - {1}'.format(self.user, self.task.title)
-
+        return 'Solution #{0} for task #{1} by <{2}>'.format(
+            self.id, self.task.id, self.user,)
 
     class Meta:
 
@@ -166,6 +166,10 @@ class Comment(models.Model):
     user = models.ForeignKey(User, on_delete=models.PROTECT, related_name='+')
     task_owner = models.ForeignKey(User, on_delete=models.PROTECT, related_name='+')
     text = models.TextField()
+
+    def __str__(self):
+
+        return 'Comment #{0} by <{1}>: {2}'.format(self.id, self.user, self.text[:100])
 
     class Meta:
 
