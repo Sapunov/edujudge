@@ -274,7 +274,7 @@ function TaskCommentsCtrl($scope, $http) {
         if ( $scope.comments === null ) {
             $scope.comments = [comment];
         } else {
-            $scope.comments.unshift();
+            $scope.comments.unshift(comment);
         }
     }
 

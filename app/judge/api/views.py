@@ -182,17 +182,14 @@ class CommentsView(APIView):
     def post(self, request, format=None):
 
         serializer = deserialize(serializers.CommentSerializer, data=request.data)
-        serializer.save(user=request.user)
+        comment = serializer.save(user=request.user)
 
         users = get_staff_ids(
-            exclude=[
-                request.user.id,
-                serializer.data['task_owner']['id']
-            ]
+            exclude=[request.user.id, comment.task_owner.id]
         )
 
-        if request.user.id != serializer.data['task_owner']['id']:
-            users = users + [serializer.data['task_owner']['id']]
+        if request.user.id != comment.task_owner.id:
+            users = users + [comment.task_owner.id]
 
         im.send_message(
             user_id=users,
@@ -201,7 +198,7 @@ class CommentsView(APIView):
             alert_msg='Новый комментарий от {0} {1} в задании {2}'.format(
                 word_gent(serializer.data['user']['first_name']),
                 word_gent(serializer.data['user']['last_name']),
-                serializer.data['id']
+                comment.task.id
             )
         )
 
