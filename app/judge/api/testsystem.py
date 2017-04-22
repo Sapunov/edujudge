@@ -92,6 +92,11 @@ def test_solution(solution_id):
 
     if solution.test is not None:
         test_input = solution.test.text
+
+        if len(test_input) > settings.TEST_INPUT_MAX_LEN:
+            test_input = test_input[:settings.TEST_INPUT_MAX_LEN]
+            test_input += ' <данные обрезаны из-за большого размера>'
+
     else:
         test_input = None
 

@@ -3,7 +3,7 @@ import os
 NAME = 'judge'
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_DIR = os.path.join('/var/lib/', NAME, 'data')
-VERSION = '0.4.1'
+VERSION = '0.4.2'
 
 SECRET_KEY = 'somestrongdjangokey'
 
@@ -181,3 +181,5 @@ IM_REDIS_PREFIX = 'judge:im'
 
 # How many seconds IM message stores in redis
 IM_REDIS_EX = 5
+
+TEST_INPUT_MAX_LEN = 500
