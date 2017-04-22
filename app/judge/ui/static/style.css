@@ -498,3 +498,12 @@ input.ng-dirty.ng-invalid {
 .test-edit-tabs-links a.active:active {
   text-decoration: none;
 }
+
+.testgenerate-error {
+  margin-bottom: 5px;
+  margin-top: 5px;
+  padding: 15px;
+  border: 1px solid #f2ab99;
+  background-color: #ffefe9;
+  margin-bottom: 20px;
+}
