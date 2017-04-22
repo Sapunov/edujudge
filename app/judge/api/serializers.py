@@ -1,4 +1,6 @@
+import os
 from django.contrib.auth.models import User
+from django.conf import settings
 
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError, NotFound
@@ -48,10 +50,15 @@ class TaskSerializer(serializers.Serializer):
     notes = serializers.CharField(required=False, allow_blank=True)
     timelimit = serializers.IntegerField()
     tests = TaskTestSerializer(many=True)
+    test_generator_path = serializers.CharField(allow_null=True)
 
     def create(self, validated_data):
 
         notes = validated_data.get('notes')
+        generator_path = validated_data.get('test_generator_path')
+
+        if generator_path is not None:
+            generator_path = os.path.join(settings.TEST_GENERATORS_DIR, generator_path)
 
         task = Task.objects.create(
             title=validated_data['title'],
@@ -60,7 +67,8 @@ class TaskSerializer(serializers.Serializer):
             result=validated_data['result'],
             timelimit=validated_data['timelimit'],
             author=validated_data['user'],
-            notes=notes if notes else None
+            notes=notes if notes else None,
+            test_generator_path=generator_path
         )
 
         for testitem in validated_data['tests']:
@@ -202,3 +210,20 @@ class CommentSerializer(serializers.Serializer):
         )
 
         return comment
+
+
+class TestsGenerateSerializer(serializers.Serializer):
+
+    source = serializers.CharField()
+
+
+class TestGenResultsItemSerializer(serializers.Serializer):
+
+    text = serializers.CharField()
+    answer = serializers.CharField()
+
+
+class TestGenResultsSerializer(serializers.Serializer):
+
+    test_generator = serializers.CharField(allow_null=True)
+    tests = TestGenResultsItemSerializer(many=True)

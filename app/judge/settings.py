@@ -3,7 +3,7 @@ import os
 NAME = 'judge'
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_DIR = os.path.join('/var/lib/', NAME, 'data')
-VERSION = '0.3.4'
+VERSION = '0.4.0'
 
 SECRET_KEY = 'somestrongdjangokey'
 
@@ -125,6 +125,7 @@ STATIC_URL = '/static/'
 LOGIN_URL = '/auth/login'
 
 SOURCE_DIR = os.path.join(DATA_DIR, 'user_sources')
+TEST_GENERATORS_DIR = os.path.join(DATA_DIR, 'test_generators')
 
 TEST_ERRORS = [
     'Полное решение',

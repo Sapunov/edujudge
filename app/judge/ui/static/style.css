@@ -449,10 +449,52 @@ input.ng-dirty.ng-invalid {
   color: #dcdcdc;
 }
 
+.item-delete {
+  color: #F5F5F5;
+  -webkit-transition: color 0.2s ease;
+  -moz-transition: color 0.2s ease;
+  -o-transition: color 0.2s ease;
+  transition: color 0.2s ease;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.item-delete:hover {
+  color: #dcdcdc;
+}
+
+.t-a-r {
+  text-align: right;
+}
+
 .comment-deleted {
   background-color: #f5f5f5;
   color: #4b4b4b;
   padding-top: 5px;
   padding-bottom: 5px;
   padding-left: 5px;
+}
+
+.test-edit-tabs-links {
+  margin-left: 20px;
+}
+
+.test-edit-tabs-links a {
+  margin-right: 5px;
+}
+
+.test-edit-tabs-links a.active {
+  color: black;
+}
+
+.test-edit-tabs-links a.active:hover {
+  text-decoration: none;
+}
+
+.test-edit-tabs-links a.active:focus {
+  text-decoration: none;
+}
+
+.test-edit-tabs-links a.active:active {
+  text-decoration: none;
 }
