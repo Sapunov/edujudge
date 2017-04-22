@@ -9,7 +9,7 @@ admin.site.register(Test)
 
 class SolutionAdmin(admin.ModelAdmin):
 
-    readonly_fields = ('task', 'test', 'user', 'source', 'error')
+    readonly_fields = ('task', 'test', 'user', 'source')
     exclude = ('source_path',)
 
 
