@@ -128,10 +128,14 @@ function TaskEditCtrl($scope, $http) {
 
     $scope.numOfTests = 1;
     $scope.numOfExamples = 1;
-    $scope.task = {};
-    $scope.task.timelimit = 1;
-    $scope.task.tests = [];
-    $scope.task.examples = [];
+
+    $scope.task = {
+        timelimit: 1,
+        tests: [],
+        examples: [],
+        test_generator_path: null
+    };
+
     $scope.codeTab = false;
     $scope.codeMirror = {
         lineNumbers: true,
@@ -139,6 +143,9 @@ function TaskEditCtrl($scope, $http) {
         readOnly: false
     }
     $scope.sent = false;
+
+    $scope.has_error_codegen = false;
+    $scope.error_msg = '';
 
     $scope.source = generator_skeleton;
 
@@ -165,7 +172,7 @@ function TaskEditCtrl($scope, $http) {
                 $scope.task.examples[i] = $scope.task.examples[i + 1];
             }
 
-            delete $scope.task.examples[$scope.numOfExamples - 1];
+            $scope.task.examples.splice($scope.numOfExamples - 1, $scope.numOfExamples - 1);
             $scope.numOfExamples--;
         } else {
             $scope.say('Нельзя удалять все примеры');
@@ -179,7 +186,7 @@ function TaskEditCtrl($scope, $http) {
                 $scope.task.tests[i] = $scope.task.tests[i + 1];
             }
 
-            delete $scope.task.tests[$scope.numOfTests - 1];
+            $scope.task.tests.splice($scope.numOfTests - 1, $scope.numOfTests - 1);
             $scope.numOfTests--;
         } else {
             $scope.say('Нельзя удалять все тесты');
@@ -190,6 +197,53 @@ function TaskEditCtrl($scope, $http) {
 
         event.preventDefault();
         event.stopPropagation();
+
+        toogle_editing();
+
+        $http.post(judge.api + '/tests/generate', { 'source': $scope.source })
+        .then(function(response) {
+            if ( response.status === 200 ) {
+                $scope.say('Код отправлен на обработку');
+            }
+        }, $scope.errorHandler);
+    }
+
+    $scope.$on('im', function(event, data) {
+
+        switch ( data.type ) {
+            case 'error_testgenerating':
+                $scope.has_error_codegen = true;
+                $scope.error_msg = data.data;
+                toogle_editing();
+                break;
+            case 'ok_testgenerating':
+                $scope.has_error_codegen = false;
+                toogle_editing();
+
+                $scope.task.test_generator_path = data.data.test_generator;
+
+                for ( let i = 0; i < data.data.tests.length; ++i ) {
+                    $scope.task.tests.push({
+                        text: data.data.tests[i].text,
+                        answer: data.data.tests[i].answer
+                    })
+                }
+
+                $scope.numOfTests = $scope.task.tests.length;
+
+                $scope.codeTab = false;
+        }
+    });
+
+    function toogle_editing() {
+
+        if ( $scope.sent ) {
+            $scope.sent = false;
+            $scope.codeMirror.readOnly = false;
+        } else {
+            $scope.sent = true;
+            $scope.codeMirror.readOnly = true;
+        }
     }
 }
 

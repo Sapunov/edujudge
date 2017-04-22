@@ -1,4 +1,5 @@
 import os
+import errno
 
 from django.db import models
 from django.contrib.auth.models import User
@@ -32,6 +33,36 @@ class Task(models.Model):
                 tasks[i].solved = 0
 
         return tasks
+
+    @staticmethod
+    def get_test_generator_path(user):
+
+        return os.path.join(
+            settings.TEST_GENERATORS_DIR,
+            'testgenerator_{user_id}_{date}.py'.format(
+                user_id=user.id,
+                date=datetime.now().strftime('%Y%m%d_%H%M%S')
+            )
+        )
+
+    @staticmethod
+    def save_test_generator(source, path):
+
+        with open(path, 'w') as fd:
+            fd.write(source)
+
+        return path
+
+    @staticmethod
+    def remove_test_generator(path):
+
+        try:
+            os.remove(path)
+        except IOError as e:
+            if e.errno == errno.ENOENT:
+                pass
+            else:
+                raise
 
     def __str__(self):
 
@@ -126,7 +157,7 @@ class Solution(models.Model):
 
         return os.path.join(
             settings.SOURCE_DIR,
-            '{task_id}-{user_id}-{date}'.format(
+            'usersource-{task_id}-{user_id}-{date}'.format(
                 task_id=task.id,
                 user_id=user.id,
                 date=datetime.now().strftime('%Y%m%d_%H%M%S')

@@ -14,6 +14,7 @@ from judge.api.im import get_user_messages
 from judge.api.models import Task, Solution, Comment
 from judge.api import im
 from judge.api.common import word_gent, get_staff_ids
+from judge.api.testgenerators import generate_tests
 
 
 class TasksListView(APIView):
@@ -39,6 +40,9 @@ class TasksListView(APIView):
         return Response(serializer.data)
 
     def post(self, request, format=None):
+
+        if not request.user.is_staff:
+            return Response(status=status.HTTP_403_FORBIDDEN)
 
         serializer = deserialize(serializers.TaskSerializer, data=request.data)
         serializer.save(user=request.user)
@@ -225,3 +229,23 @@ class CommentView(APIView):
         comment.delete()
 
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class TestsGenerateView(APIView):
+
+    def post(self, request, format=None):
+
+        if not request.user.is_staff:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
+        serializer_in = deserialize(
+            serializers.TestsGenerateSerializer, request.data)
+
+        script_path = Task.save_test_generator(
+            serializer_in.validated_data['source'],
+            Task.get_test_generator_path(request.user)
+        )
+
+        django_rq.enqueue(generate_tests, script_path, request.user.id)
+
+        return Response(status=status.HTTP_200_OK)
