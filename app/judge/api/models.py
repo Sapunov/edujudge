@@ -126,7 +126,7 @@ class Solution(models.Model):
         for solution in solutions:
             solution.error_description = settings.TEST_ERRORS[solution.error]
 
-            if len(solution.test.text) > settings.TEST_INPUT_MAX_LEN:
+            if solution.test and len(solution.test.text) > settings.TEST_INPUT_MAX_LEN:
                 solution.test.text = solution.test.text[:settings.TEST_INPUT_MAX_LEN]
                 solution.test.text += ' <данные обрезаны из-за большого размера>'
 

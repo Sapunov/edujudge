@@ -99,7 +99,6 @@ class TaskCheckSerializer(serializers.Serializer):
 
     source = serializers.CharField()
 
-
     def create(self, validated_data):
 
         solution = Solution.create(
