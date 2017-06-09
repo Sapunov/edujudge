@@ -80,6 +80,10 @@ class Example(models.Model):
     text = models.TextField()
     answer = models.TextField()
 
+    def __str__(self):
+
+        return 'Example #{0} for task #{1}'.format(self.id, self.task.id)
+
     class Meta:
 
         verbose_name = 'Example'
