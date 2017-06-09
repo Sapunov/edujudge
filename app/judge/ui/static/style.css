@@ -422,11 +422,16 @@ input.ng-dirty.ng-invalid {
 }
 
 .comment-item .userpic {
-  margin-right: 15px;
+  position: absolute;
 }
 
 .comment-item .userpic img {
-  max-height: 50px;
+  height: 50px;
+  width: 50px;
+}
+
+.comment-item .usercontent {
+  margin-left: 65px;
 }
 
 .pos-rel {
