@@ -130,7 +130,7 @@
               uib-tooltip="Удалить"
               ng-click="deleteComment(comment.id)"></span>
             <div class="pull-left userpic">
-              <img src="/static/images/user_small.jpg">
+              <img ng-src="/static/images/avatars/{{ comment.user.username }}_small.png">
             </div>
             <div class="pull-left usercontent">
               <div>

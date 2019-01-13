@@ -13,8 +13,10 @@ from judge.api.testsystem import test_solution
 from judge.api.im import get_user_messages
 from judge.api.models import Task, Solution, Comment
 from judge.api import im
-from judge.api.common import word_gent, get_staff_ids
+from judge.api.common import word_gent, get_staff_ids, get_logger
 from judge.api.testgenerators import generate_tests
+
+log = get_logger(__name__)
 
 
 class TasksListView(APIView):
@@ -133,9 +135,20 @@ class UsersView(APIView):
 
         if request.user.is_staff:
             users = User.objects.filter(is_staff=False)
-            serializer = serialize(serializers.UserSerializer, users, many=True)
+            for user in users:
+                user_tasks = Task.all_with_user_solution(user)
+                tasks_solved = len([_ for _ in user_tasks if _.solved == 1])
+                tasks_failed = len([_ for _ in user_tasks if _.solved == 0])
+                tasks_untouched = len([_ for _ in user_tasks if _.solved == -1])
+                #
+                setattr(user, 'tasks_solved', tasks_solved)
+                setattr(user, 'tasks_failed', tasks_failed)
+                setattr(user, 'tasks_untouched', tasks_untouched)
 
-            return Response(serializer.data)
+            serializer = serialize(serializers.UserSerializer, users, many=True)
+            users_data = serializer.data
+
+            return Response(users_data)
         else:
             return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -198,18 +211,21 @@ class CommentsView(APIView):
         )
 
         if request.user.id != comment.task_owner.id:
-            users = users + [comment.task_owner.id]
+            users.append(comment.task_owner.id)
 
-        im.send_message(
-            user_id=users,
-            msg_type='new_comment',
-            message=serializer.data,
-            alert_msg='Новый комментарий от {0} {1} в задании {2}'.format(
-                word_gent(serializer.data['user']['first_name']),
-                word_gent(serializer.data['user']['last_name']),
-                comment.task.id
+        try:
+            im.send_message(
+                user_id=users,
+                msg_type='new_comment',
+                message=serializer.data,
+                alert_msg='Новый комментарий от {0} {1} в задании {2}'.format(
+                    word_gent(serializer.data['user']['first_name']),
+                    word_gent(serializer.data['user']['last_name']),
+                    comment.task.id
+                )
             )
-        )
+        except Exception as exc:
+            log.exception(exc)
 
         return Response(serializer.data)
 

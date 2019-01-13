@@ -1,0 +1,21 @@
+version: '3'
+
+services:
+  app:
+    build: .
+    command: /usr/bin/supervisord
+    volumes:
+      - /var/lib/judge/data
+    ports:
+      - "8000:80"
+    depends_on:
+      - ubuntu
+      - postgres
+      - redis
+  postgres:
+    image: onjin/alpine-postgres:9.6
+  redis:
+    image: redis
+  ubuntu:
+    build:
+      context: deploy/ubuntu

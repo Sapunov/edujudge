@@ -3,7 +3,7 @@ import os
 NAME = 'judge'
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_DIR = os.path.join('/var/lib/', NAME, 'data')
-VERSION = '0.4.6'
+VERSION = '0.5.0'
 
 SECRET_KEY = 'somestrongdjangokey'
 
@@ -71,15 +71,14 @@ else:
     DATABASES = {
         'default': {
             'ENGINE':   'django.db.backends.postgresql_psycopg2',
-            'NAME':     'db',
-            'USER':     'dba',
-            'PASSWORD': 'somestrongdbpassword',
+            'NAME':     'postgres',
+            'USER':     'postgres',
             'HOST':     'postgres',
             'PORT':     '5432',
         },
     }
 
-    REDIS_HOST = 'redisserver'
+    REDIS_HOST = 'redis'
 
 
 REDIS_PORT = 6379
@@ -112,7 +111,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Moscow'
 
 USE_I18N = True
 
