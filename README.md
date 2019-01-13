@@ -3,23 +3,19 @@
 
  # Как запустить
 
- 1. Установить docker и docker-compose
- 2. docker-compose build
- 3. docker-compose up
- 4. docker-compose exec app python /var/www/app/manage.py migrate
- 5. docker-compose exec app python /var/www/app/manage.py collectstatic --noinput
+1. Установить [docker](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-16-04) и [docker-compose](https://www.digitalocean.com/community/tutorials/how-to-install-docker-compose-on-ubuntu-16-04)
+ 2. `# docker-compose build`
+ 3. `# docker-compose up1
+ 4. `# docker-compose exec app python /var/www/app/manage.py migrate`
+ 5. `#docker-compose exec app python /var/www/app/manage.py collectstatic --noinput`
 
 Если это самый первый запуск системы, то стоит создать первого учителя:
 
-```bash
-# docker-compose exec app python /var/www/app/manage.py create_customer --teacher Имя Фамилия
-```
+`# docker-compose exec app python /var/www/app/manage.py create_customer --teacher Имя Фамилия`
 
 Следует выполнять именно эту команду для того, чтобы правильно создались аватары.
 
 
 Для доступе к административной консоли django слудует создать суперпользователя:
 
-```bash
-> # docker-compose exec app python /var/www/app/manage.py createsuperuser
-```
+`# docker-compose exec app python /var/www/app/manage.py createsuperuser`
