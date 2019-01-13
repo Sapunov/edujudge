@@ -11,11 +11,15 @@
 
 Если это самый первый запуск системы, то стоит создать первого учителя:
 
-> # docker-compose exec app python /var/www/app/manage.py create_customer --teacher Имя Фамилия
+```bash
+# docker-compose exec app python /var/www/app/manage.py create_customer --teacher Имя Фамилия
+```
 
 Следует выполнять именно эту команду для того, чтобы правильно создались аватары.
 
 
 Для доступе к административной консоли django слудует создать суперпользователя:
 
+```bash
 > # docker-compose exec app python /var/www/app/manage.py createsuperuser
+```
