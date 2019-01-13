@@ -134,7 +134,10 @@
             </div>
             <div class="pull-left usercontent">
               <div>
-                <strong><a ng-href="/users/{{ comment.user.username }}">{{ comment.user.first_name }} {{ comment.user.last_name }}</a></strong>
+                <strong>
+                  <a ng-href="/users/{{ comment.user.username }}">{{ comment.user.first_name }} {{ comment.user.last_name }}</a>
+                </strong>
+                <small class="grey" ng-show="comment.user.is_staff">преподаватель</small>
               </div>
               <p class="pre-line">{{ comment.text }}</p>
               <p class="grey"><small>{{ comment.time }}</small></p>
