@@ -2,6 +2,7 @@ version: '3'
 
 services:
   app:
+    restart: always
     build: .
     command: /usr/bin/supervisord
     volumes:
@@ -13,8 +14,10 @@ services:
       - postgres
       - redis
   postgres:
+    restart: always
     image: onjin/alpine-postgres:9.6
   redis:
+    restart: always
     image: redis
   ubuntu:
     build:
