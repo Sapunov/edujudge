@@ -66,21 +66,33 @@ class Command(BaseCommand):
             action='store_true',
             help='Создание аккаунта преподавателя',
         )
+        parser.add_argument(
+            '-p', '--password',
+            type=str,
+            help='Явное указание пароля')
 
     def handle(self, *args, **options):
 
-        name = options['name'].lower()
-        name_translit = translit(name)
-        surname = options['surname'].lower()
-        surname_translit = translit(surname)
+        name = options['name'].capitalize()
+        name_translit = translit(name.lower())
+        surname = options['surname'].capitalize()
+        surname_translit = translit(surname.lower())
 
         username = generate_uniq_username(name_translit, surname_translit)
-        password = random_string(8)
+        is_password_random = False
+
+        if options['password'] is not None:
+            password = options['password']
+            if not password:
+                raise CommandError('Password cannot be empty')
+        else:
+            password = random_string(8)
+            is_password_random = True
 
         User.objects.create_user(
             username=username, password=password,
-            first_name=name.capitalize(),
-            last_name=surname.capitalize(),
+            first_name=name,
+            last_name=surname,
             is_staff=options['teacher'])
 
         initials = (name_translit[:1] + surname_translit[:1]).upper()
@@ -88,5 +100,10 @@ class Command(BaseCommand):
 
         self.stdout.write(
             self.style.SUCCESS(
-                'username: {0}, password: {1}, avatar: {2}'.format(
-                    username, password, path_to_avatar)))
+                'name: {0} {1}, username: {2}, password: {3} ({4})'.format(
+                    name,
+                    surname,
+                    username,
+                    password,
+                    'random' if is_password_random else 'predefined'
+                )))
