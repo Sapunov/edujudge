@@ -447,6 +447,7 @@ function StudentsCtrl($scope, $http, $routeParams) {
 
     $scope.students = null;
     $scope.last_update = null;
+    $scope.all_solved = null;
 
     function loadStudents() {
         $http.get(judge.api + '/users')
@@ -454,6 +455,8 @@ function StudentsCtrl($scope, $http, $routeParams) {
             if ( response.status === 200 && response.data.length > 0 ) {
                 $scope.students = response.data;
                 $scope.last_update = new Date();
+                $scope.all_solved = $scope.students.reduce((prev, cur) =>
+                    prev + cur.tasks_solved, 0);
             } else {
                 $scope.last_update = null;
             }
