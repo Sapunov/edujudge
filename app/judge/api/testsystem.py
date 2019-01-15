@@ -6,6 +6,7 @@ from django.conf import settings
 
 from judge.api.models import Solution
 from judge.api.im import send_message
+from judge.api.common import get_staff_ids
 
 log = logging.getLogger('main.' + __name__)
 
@@ -116,4 +117,13 @@ def test_solution(solution_id):
         msg_type='test_complete',
         message=msg,
         alert_msg='Задание {0} проверено. {1}'.format(solution.task.id, verdict)
+    )
+
+    # Сообщение для преподавателей, которое обновит /students
+    staff = get_staff_ids(exclude=[solution.user.id])
+    log.debug('Sending `students_did` msg to %s' % staff)
+    send_message(
+        user_id=staff,
+        msg_type='students_did',
+        message={}
     )

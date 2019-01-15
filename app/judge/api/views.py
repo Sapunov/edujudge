@@ -1,4 +1,5 @@
 import django_rq
+import logging
 
 from django.contrib.auth.models import User
 
@@ -16,7 +17,7 @@ from judge.api import im
 from judge.api.common import word_gent, get_staff_ids, get_logger
 from judge.api.testgenerators import generate_tests
 
-log = get_logger(__name__)
+log = logging.getLogger('main.' + __name__)
 
 
 class TasksListView(APIView):
@@ -150,7 +151,7 @@ class UsersView(APIView):
 
             return Response(users_data)
         else:
-            return Response(status=status.HTTP_204_NO_CONTENT)
+            return Response(status=status.HTTP_403_FORBIDDEN)
 
 
 class IMView(APIView):

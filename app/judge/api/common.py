@@ -35,6 +35,8 @@ def word_gent(word):
 
 def get_staff_ids(exclude=None):
 
+    assert exclude is None or isinstance(exclude, list), 'Exclude must be list'
+
     users = User.objects.filter(is_staff=True)
     ids = set()
 
