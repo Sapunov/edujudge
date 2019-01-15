@@ -13,7 +13,7 @@ def generate():
 
   # Your code here...
 
-  return test, answer`;
+  return str(test), str(answer)`;
 ;function BaseCtrl($scope, $timeout, $http, $interval) {
 
     $scope.judge_version = judge.version;
@@ -285,7 +285,6 @@ function TaskCtrl($scope, $http, $routeParams, $location) {
                 test_complete(data.data);
                 break;
         }
-
     });
 
 
@@ -410,7 +409,7 @@ function TaskCommentsCtrl($scope, $http) {
 function UserPageCtrl($scope, $http, $routeParams) {
 
     $scope.user = null;
-    $scope.alienPage = false;
+    $scope.alienPage = $routeParams.username !== judge.user.username;
     $scope.solved_statuses = {
         '-1': 'progress-bar-item pull-left',
         '0': 'progress-bar-item pull-left red-bg',
@@ -418,7 +417,6 @@ function UserPageCtrl($scope, $http, $routeParams) {
     }
 
     $scope.tasks = [];
-    $scope.students = null;
 
     function loadTasks(username) {
 
@@ -440,24 +438,37 @@ function UserPageCtrl($scope, $http, $routeParams) {
         }, $scope.errorHandler);
     }
 
-    function loadStudents() {
+    loadUser($routeParams.username);
+    loadTasks($routeParams.username);
+}
 
+
+function StudentsCtrl($scope, $http, $routeParams) {
+
+    $scope.students = null;
+    $scope.last_update = null;
+
+    function loadStudents() {
         $http.get(judge.api + '/users')
         .then(function(response) {
             if ( response.status === 200 && response.data.length > 0 ) {
                 $scope.students = response.data;
+                $scope.last_update = new Date();
+            } else {
+                $scope.last_update = null;
             }
         }, $scope.errorHandler);
     }
 
-    loadUser($routeParams.username);
-    loadTasks($routeParams.username);
+    $scope.$on('im', function(event, data) {
+        switch ( data.type ) {
+            case 'students_did':
+                loadStudents();
+                break;
+        }
+    });
 
-    if ( $routeParams.username == judge.user.username ) {
-        loadStudents();
-    } else {
-        $scope.alienPage = true;
-    }
+    loadStudents();
 }
 ;(function() {
     angular.module('judge', ['ngRoute', 'ui.bootstrap', 'ui.codemirror'])
@@ -470,6 +481,7 @@ function UserPageCtrl($scope, $http, $routeParams) {
     .controller('taskCtrl', TaskCtrl)
     .controller('userpageCtrl', UserPageCtrl)
     .controller('taskCommentsCtrl', TaskCommentsCtrl)
+    .controller('studentsCtrl', StudentsCtrl)
 
     // Configuring routes
     .config(['$locationProvider', '$routeProvider', '$httpProvider',
@@ -504,6 +516,11 @@ function UserPageCtrl($scope, $http, $routeParams) {
             .when('/users/:username', {
                 templateUrl: 'static/partials/userpage.html?v=' + judge.version,
                 controller: 'userpageCtrl'
+            })
+
+            .when('/students', {
+                templateUrl: 'static/partials/students.html?v=' + judge.version,
+                controller: 'studentsCtrl'
             })
 
             .when('/auth/logout', {

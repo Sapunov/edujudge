@@ -13,4 +13,4 @@ def generate():
 
   # Your code here...
 
-  return test, answer`;
+  return str(test), str(answer)`;

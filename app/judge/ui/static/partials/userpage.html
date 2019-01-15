@@ -32,36 +32,6 @@
             </span>
         </div>
       </div>
-      <div ng-show="students">
-        <hr>
-        <p>Студенты</p>
-        <div>
-          <table class="table table-striped">
-              <thead>
-                <tr>
-                  <th scope="col">#</th>
-                  <th scope="col">Студент</th>
-                  <th scope="col">Решенные</th>
-                  <th scope="col">С ошибкой</th>
-                  <th scope="col">Нетронутые</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr ng-repeat="student in students">
-                  <th scope="row">{{ $index + 1}}</th>
-                  <td>
-                    <a ng-href="/users/{{ student.username }}">
-                      {{ student.first_name }} {{ student.last_name }} ({{ student.username }})
-                    </a>
-                  </td>
-                  <td>{{ student.tasks_solved }}</td>
-                  <td>{{ student.tasks_failed }}</td>
-                  <td>{{ student.tasks_untouched }}</td>
-                </tr>
-              </tbody>
-            </table>
-        </div>
-      </div>
     </div>
   </div>
 </div>
