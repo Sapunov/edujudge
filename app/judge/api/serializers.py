@@ -133,7 +133,7 @@ class SolutionsListSerializer(serializers.Serializer):
     task_id = serializers.PrimaryKeyRelatedField(read_only=True)
     test = serializers.SlugRelatedField(slug_field='text', read_only=True)
     testnum = serializers.IntegerField()
-    time = serializers.DateTimeField(format='%m-%d-%Y %H:%M:%S')
+    time = serializers.DateTimeField(format=settings.UI_DATETIME_FORMAT)
     error = serializers.IntegerField()
     verdict = serializers.CharField()
     error_description = serializers.CharField()
@@ -181,7 +181,7 @@ class CommentSerializer(serializers.Serializer):
 
     id = serializers.IntegerField(required=False)
     user = UserSerializer(required=False)
-    time = serializers.DateTimeField(format='%m-%d-%Y %H:%M:%S', required=False)
+    time = serializers.DateTimeField(format=settings.UI_DATETIME_FORMAT, required=False)
     text = serializers.CharField()
     task_id = serializers.IntegerField(required=False)
     username = serializers.CharField(required=False)
@@ -198,12 +198,12 @@ class CommentSerializer(serializers.Serializer):
         try:
             task = Task.objects.get(pk=validated_data['task_id'])
         except Task.DoesNotExist:
-            raise NotFound
+            raise NotFound({'task_id': ['Task with the specified id does not exist']})
 
         try:
             owner = User.objects.get(username=validated_data['username'])
         except User.DoesNotExist:
-            raise NotFound
+            raise NotFound({'username': ['User with the specified username does not exist']})
 
         comment = Comment.objects.create(
             task=task,

@@ -124,6 +124,7 @@ STATIC_URL = '/static/'
 LOGIN_URL = '/auth/login'
 
 SOURCE_DIR = os.path.join(DATA_DIR, 'user_sources')
+
 TEST_GENERATORS_DIR = os.path.join(DATA_DIR, 'test_generators')
 
 TEST_ERRORS = [
@@ -182,3 +183,5 @@ IM_REDIS_PREFIX = 'judge:im'
 IM_REDIS_EX = 5
 
 TEST_INPUT_MAX_LEN = 500
+
+UI_DATETIME_FORMAT = '%d.%m.%Y @ %H:%M:%S'
