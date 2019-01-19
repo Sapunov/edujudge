@@ -113,9 +113,7 @@ class SolutionsListView(generics.GenericAPIView):
         for uid in result:
             for tid in result[uid]:
                 codes = result[uid][tid]
-                if not codes:
-                    result[uid][tid] = 'untouched'
-                elif codes.count(1) > 0:
+                if codes.count(0) > 0:
                     result[uid][tid] = 'solved'
                 else:
                     result[uid][tid] = 'error'

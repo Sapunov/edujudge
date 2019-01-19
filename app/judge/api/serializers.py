@@ -119,7 +119,7 @@ class TaskCheckSerializer(serializers.Serializer):
 
 class SolutionsListParamsSerializer(serializers.Serializer):
 
-    task_ids = serializers.CharField()
+    tasks_ids = serializers.CharField()
     usernames_or_ids = serializers.CharField()
     summary = serializers.BooleanField(default=False)
     limit = serializers.IntegerField(default=5)
@@ -130,6 +130,10 @@ class SolutionsListParamsSerializer(serializers.Serializer):
             raise ValidationError({
                 'usernames_or_ids': [
                     'You need to specify at least one user']})
+
+        for i, uid in enumerate(usernames_or_ids):
+            if str.isdigit(uid):
+                usernames_or_ids[i] = int(uid)
 
         data_types = count_data_types(usernames_or_ids)
 
@@ -170,7 +174,7 @@ class SolutionsListParamsSerializer(serializers.Serializer):
     def validate(self, attrs):
 
         user = self.context['request'].user
-        tasks_ids = attrs['task_ids'].split()
+        tasks_ids = attrs['tasks_ids'].split(',')
         usernames_or_ids = attrs['usernames_or_ids'].split(',')
 
         found_users = self.check_and_get_users(usernames_or_ids)
