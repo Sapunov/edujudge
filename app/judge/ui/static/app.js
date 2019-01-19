@@ -325,11 +325,11 @@ function TaskCtrl($scope, $http, $routeParams, $location) {
 
     function load_solutions() {
 
-        let url = `/solutions?task_id=${$scope.taskId}&username=${$scope.username}`;
+        let url = `/solutions?task_ids=${$scope.taskId}&usernames_or_ids=${$scope.username}`;
 
         $http.get(judge.api + url).then(function(response) {
-            if ( response.data.length > 0 ) {
-                $scope.solutions = response.data;
+            if ( response.data.solutions.length > 0 ) {
+                $scope.solutions = response.data.solutions;
             }
         }, $scope.errorHandler);
     }
@@ -445,6 +445,10 @@ function UserPageCtrl($scope, $http, $routeParams) {
 
 function StudentsCtrl($scope, $http, $routeParams) {
 
+}
+
+function DashboardCtrl($scope, $http, $routeParams) {
+
     $scope.students = null;
     $scope.last_update = null;
     $scope.all_solved = null;
@@ -488,6 +492,7 @@ function StudentsCtrl($scope, $http, $routeParams) {
     .controller('userpageCtrl', UserPageCtrl)
     .controller('taskCommentsCtrl', TaskCommentsCtrl)
     .controller('studentsCtrl', StudentsCtrl)
+    .controller('dashboardCtrl', DashboardCtrl)
 
     // Configuring routes
     .config(['$locationProvider', '$routeProvider', '$httpProvider',
@@ -527,6 +532,11 @@ function StudentsCtrl($scope, $http, $routeParams) {
             .when('/students', {
                 templateUrl: 'static/partials/students.html?v=' + judge.version,
                 controller: 'studentsCtrl'
+            })
+
+            .when('/dashboard', {
+                templateUrl: 'static/partials/dashboard.html?v=' + judge.version,
+                controller: 'dashboardCtrl'
             })
 
             .when('/auth/logout', {

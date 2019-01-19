@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 
 from rest_framework import status
 from rest_framework.views import APIView
+from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError
 
@@ -16,6 +17,8 @@ from judge.api.models import Task, Solution, Comment
 from judge.api import im
 from judge.api.common import word_gent, get_staff_ids, get_logger
 from judge.api.testgenerators import generate_tests
+from judge.api.common import list_to_dict
+
 
 log = logging.getLogger('main.' + __name__)
 
@@ -88,32 +91,69 @@ class TaskCheckView(APIView):
         return Response(status=status.HTTP_200_OK)
 
 
-class SolutionsListView(APIView):
+class SolutionsListView(generics.GenericAPIView):
+
+    serializer_class = serializers.SolutionsListParamsSerializer
+
+    def create_solutions_summary(self, solutions):
+
+        result = {}
+
+        for solution in solutions:
+            uid = solution.user_id
+            tid = solution.task_id
+            err = solution.error
+            if uid in result:
+                if tid not in result[uid]:
+                    result[uid][tid] = []
+                result[uid][tid].append(err)
+            else:
+                result[uid] = {tid: [err]}
+
+        for uid in result:
+            for tid in result[uid]:
+                codes = result[uid][tid]
+                if not codes:
+                    result[uid][tid] = 'untouched'
+                elif codes.count(1) > 0:
+                    result[uid][tid] = 'solved'
+                else:
+                    result[uid][tid] = 'error'
+
+        return result
 
     def get(self, request, format=None):
 
-        data = deserialize(
-            serializers.SolutionsListParamsSerializer,
-            request.query_params
-        ).data
+        serializer = self.get_serializer(data=request.query_params)
+        serializer.is_valid(raise_exception=True)
 
-        if request.user.username != data['username']:
-            if not request.user.is_staff:
-                return Response(status=status.HTTP_403_FORBIDDEN)
+        found_users = serializer.validated_data['found_users']
+        found_tasks = serializer.validated_data['found_tasks']
+        summary = serializer.validated_data['summary']
+        limit = serializer.validated_data['limit']
 
-            try:
-                user = User.objects.get(username=data['username'])
-            except User.DoesNotExist:
-                return Response(status=status.HTTP_404_NOT_FOUND)
+        solutions = Solution.fetch_solutions(found_tasks, found_users, limit)
+
+        result = {
+            'tasks': list_to_dict(serialize(
+                serializers.TaskSimpleSerializer,
+                found_tasks,
+                many=True).data, 'id'),
+            'users': list_to_dict(serialize(
+                serializers.UserSerializer,
+                found_users,
+                many=True).data, 'id')
+        }
+
+        if summary:
+            result['summary'] = self.create_solutions_summary(solutions)
         else:
-            user = request.user
+            result['solutions'] = serialize(
+                serializers.SolutionsListSerializer,
+                solutions,
+                many=True).data
 
-        solutions = Solution.get_by_task_user(data['task_id'], user)
-
-        serializer = serialize(
-            serializers.SolutionsListSerializer, solutions, many=True)
-
-        return Response(serializer.data)
+        return Response(result)
 
 
 class UserPageView(APIView):

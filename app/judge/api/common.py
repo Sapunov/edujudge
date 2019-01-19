@@ -74,3 +74,34 @@ def translit(string):
 def random_string(length):
 
     return ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(length))
+
+
+def count_data_types(list_of_items):
+
+    assert isinstance(list_of_items, (list, tuple)), \
+        'list_of_items must be of type list or tuple'
+
+    count_map = {}
+
+    for item in list_of_items:
+        type_name = type(item).__name__
+        if type_name in count_map:
+            count_map[type_name] += 1
+        else:
+            count_map[type_name] = 1
+
+    return count_map
+
+
+def list_to_dict(objs_list, key):
+
+    result = {}
+
+    for obj in objs_list:
+        if key not in obj:
+            raise ValueError('Key not in obj')
+        if obj[key] in result:
+            raise ValueError('Duplicate key: {}'.format(obj[key]))
+        result[obj[key]] = obj
+
+    return result
