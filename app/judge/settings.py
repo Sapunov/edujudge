@@ -3,7 +3,7 @@ import os
 NAME = 'judge'
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_DIR = os.path.join('/var/lib/', NAME, 'data')
-VERSION = '0.8.0'
+VERSION = '0.8.1'
 
 SECRET_KEY = 'somestrongdjangokey'
 
