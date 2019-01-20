@@ -512,3 +512,11 @@ input.ng-dirty.ng-invalid {
   background-color: #ffefe9;
   margin-bottom: 20px;
 }
+
+.cell-red {
+  background-color: #d9534f;
+}
+
+.cell-green {
+  background-color: #5cb85c;
+}

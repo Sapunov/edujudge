@@ -118,18 +118,16 @@ class Solution(models.Model):
     user = models.ForeignKey(User, on_delete=models.PROTECT, related_name='+')
 
     @classmethod
-    def get_by_task_user(cls, task_id, user, limit=5):
+    def fetch_solutions(cls, tasks, users, limit=-1):
 
-        solutions = cls.objects.filter(
-            task__id=task_id, user=user
-        ).order_by('-time')
+        solutions = Solution.objects.filter(
+            user__in=users,
+            task__in=tasks).order_by('-time')
 
-        if limit:
+        if len(users) == 1 and limit > 0:
             solutions = solutions[:limit]
 
         for solution in solutions:
-            solution.error_description = settings.TEST_ERRORS[solution.error]
-
             if solution.test and len(solution.test.text) > settings.TEST_INPUT_MAX_LEN:
                 solution.test.text = solution.test.text[:settings.TEST_INPUT_MAX_LEN]
                 solution.test.text += ' <данные обрезаны из-за большого размера>'
@@ -183,6 +181,11 @@ class Solution(models.Model):
 
         with open(self.source_path) as fd:
             return fd.read()
+
+    @property
+    def error_description(self):
+
+        return settings.TEST_ERRORS[self.error]
 
     def delete(self):
 

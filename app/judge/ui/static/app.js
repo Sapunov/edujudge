@@ -325,11 +325,11 @@ function TaskCtrl($scope, $http, $routeParams, $location) {
 
     function load_solutions() {
 
-        let url = `/solutions?task_id=${$scope.taskId}&username=${$scope.username}`;
+        let url = `/solutions?tasks_ids=${$scope.taskId}&usernames_or_ids=${$scope.username}`;
 
         $http.get(judge.api + url).then(function(response) {
-            if ( response.data.length > 0 ) {
-                $scope.solutions = response.data;
+            if ( response.data.solutions.length > 0 ) {
+                $scope.solutions = response.data.solutions;
             }
         }, $scope.errorHandler);
     }
@@ -445,23 +445,71 @@ function UserPageCtrl($scope, $http, $routeParams) {
 
 function StudentsCtrl($scope, $http, $routeParams) {
 
-    $scope.students = null;
-    $scope.last_update = null;
-    $scope.all_solved = null;
-    $scope.all_failed = null;
+}
 
-    function loadStudents() {
+function DashboardCtrl($scope, $http, $routeParams, $location) {
+
+    $scope.users = null;
+    $scope.tasks = null;
+    $scope.summary = null;
+    $scope.last_update = null;
+    //
+    $scope.tasks_ids = $routeParams.tasks_ids ? $routeParams.tasks_ids.split(',') : null;
+    $scope.usernames_or_ids = $routeParams.usernames_or_ids ? $routeParams.usernames_or_ids.split(',') : null;
+    //
+    $scope.not_staff_users = null;
+    $scope.all_tasks = null;
+    $scope.suggest_link = $location.path();
+
+    function updateSuggestLink() {
+        $scope.suggest_link = $location.path();
+        if ($scope.all_tasks || $scope.not_staff_users) {
+            $scope.suggest_link += '?';
+        }
+        if ($scope.all_tasks) {
+            $scope.suggest_link += 'tasks_ids=' + $scope.all_tasks.map(({id}) => id).join(',') + '&';
+        }
+        if ($scope.not_staff_users) {
+            $scope.suggest_link += 'usernames_or_ids=' + $scope.not_staff_users.map(({id}) => id).join(',')
+        }
+    }
+
+    function loadSolutionsSummary(tasks_ids, usernames_or_ids) {
+
+        if (!tasks_ids || !usernames_or_ids) {
+            return
+        }
+
+        let url = `/solutions?summary=true&tasks_ids=${tasks_ids.join(',')}&usernames_or_ids=${usernames_or_ids.join(',')}`;
+
+        $http.get(judge.api + url).then(function(response) {
+            if ( response.status === 200 ) {
+                $scope.last_update = new Date();
+                $scope.users = response.data.users;
+                $scope.tasks = response.data.tasks;
+                $scope.summary = response.data.summary;
+            }
+        }, $scope.errorHandler);
+    }
+
+    function loadNotStaff() {
+
         $http.get(judge.api + '/users')
         .then(function(response) {
-            if ( response.status === 200 && response.data.length > 0 ) {
-                $scope.students = response.data;
-                $scope.last_update = new Date();
-                $scope.all_solved = $scope.students.reduce((prev, cur) =>
-                    prev + cur.tasks_solved, 0);
-                $scope.all_failed = $scope.students.reduce((prev, cur) =>
-                    prev + cur.tasks_failed, 0);
-            } else {
-                $scope.last_update = null;
+            if ( response.status === 200 ) {
+                $scope.not_staff_users = response.data;
+                updateSuggestLink
+            }
+        }, $scope.errorHandler);
+    }
+
+    function loadTasks() {
+
+        $http.get(judge.api + '/tasks')
+        .then(function(response) {
+            if ( response.status === 200 ) {
+                $scope.all_tasks = response.data;
+                updateSuggestLink();
             }
         }, $scope.errorHandler);
     }
@@ -469,12 +517,27 @@ function StudentsCtrl($scope, $http, $routeParams) {
     $scope.$on('im', function(event, data) {
         switch ( data.type ) {
             case 'students_did':
-                loadStudents();
+                loadSolutionsSummary($scope.tasks_ids, $scope.usernames_or_ids);
                 break;
         }
     });
 
-    loadStudents();
+    $scope.determineClass = function(summary) {
+        if (summary === 'solved') {
+            return 'cell-green';
+        } else if (summary === 'error') {
+            return 'cell-red';
+        } else {
+            return '';
+        }
+    }
+
+    loadSolutionsSummary($scope.tasks_ids, $scope.usernames_or_ids);
+
+    if (!$scope.tasks_ids || !$scope.usernames_or_ids) {
+        loadNotStaff();
+        loadTasks();
+    }
 }
 ;(function() {
     angular.module('judge', ['ngRoute', 'ui.bootstrap', 'ui.codemirror'])
@@ -488,6 +551,7 @@ function StudentsCtrl($scope, $http, $routeParams) {
     .controller('userpageCtrl', UserPageCtrl)
     .controller('taskCommentsCtrl', TaskCommentsCtrl)
     .controller('studentsCtrl', StudentsCtrl)
+    .controller('dashboardCtrl', DashboardCtrl)
 
     // Configuring routes
     .config(['$locationProvider', '$routeProvider', '$httpProvider',
@@ -527,6 +591,11 @@ function StudentsCtrl($scope, $http, $routeParams) {
             .when('/students', {
                 templateUrl: 'static/partials/students.html?v=' + judge.version,
                 controller: 'studentsCtrl'
+            })
+
+            .when('/dashboard', {
+                templateUrl: 'static/partials/dashboard.html?v=' + judge.version,
+                controller: 'dashboardCtrl'
             })
 
             .when('/auth/logout', {

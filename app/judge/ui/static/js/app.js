@@ -10,6 +10,7 @@
     .controller('userpageCtrl', UserPageCtrl)
     .controller('taskCommentsCtrl', TaskCommentsCtrl)
     .controller('studentsCtrl', StudentsCtrl)
+    .controller('dashboardCtrl', DashboardCtrl)
 
     // Configuring routes
     .config(['$locationProvider', '$routeProvider', '$httpProvider',
@@ -49,6 +50,11 @@
             .when('/students', {
                 templateUrl: 'static/partials/students.html?v=' + judge.version,
                 controller: 'studentsCtrl'
+            })
+
+            .when('/dashboard', {
+                templateUrl: 'static/partials/dashboard.html?v=' + judge.version,
+                controller: 'dashboardCtrl'
             })
 
             .when('/auth/logout', {

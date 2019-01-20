@@ -3,9 +3,10 @@ from django.contrib.auth.models import User
 from django.conf import settings
 
 from rest_framework import serializers
-from rest_framework.exceptions import ValidationError, NotFound
+from rest_framework.exceptions import ValidationError, NotFound, PermissionDenied
 
 from judge.api.models import Task, Test, Example, Solution, Comment
+from judge.api.common import count_data_types
 
 
 def deserialize(serializer_class, data):
@@ -37,6 +38,12 @@ class TaskExampleSerializer(serializers.Serializer):
 
     text = serializers.CharField()
     answer = serializers.CharField()
+
+
+class TaskSimpleSerializer(serializers.Serializer):
+
+    id = serializers.IntegerField()
+    title = serializers.CharField()
 
 
 class TaskSerializer(serializers.Serializer):
@@ -112,8 +119,78 @@ class TaskCheckSerializer(serializers.Serializer):
 
 class SolutionsListParamsSerializer(serializers.Serializer):
 
-    task_id = serializers.IntegerField()
-    username = serializers.CharField()
+    tasks_ids = serializers.CharField()
+    usernames_or_ids = serializers.CharField()
+    summary = serializers.BooleanField(default=False)
+    limit = serializers.IntegerField(default=5)
+
+    def check_and_get_users(self, usernames_or_ids):
+
+        if len(usernames_or_ids) == 0:
+            raise ValidationError({
+                'usernames_or_ids': [
+                    'You need to specify at least one user']})
+
+        for i, uid in enumerate(usernames_or_ids):
+            if str.isdigit(uid):
+                usernames_or_ids[i] = int(uid)
+
+        data_types = count_data_types(usernames_or_ids)
+
+        if len(data_types) > 1:
+            raise ValidationError({
+                'usernames_or_ids': [
+                    'You need to pass either the ids or usernames']})
+
+        if len(data_types.keys() - set(('str', 'int'))) > 0:
+            raise ValidationError({
+                'usernames_or_ids': [
+                    'Allowed types of identifiers: int, str']})
+
+        if isinstance(usernames_or_ids[0], str):
+            found_users = User.objects.filter(username__in=usernames_or_ids)
+        else:
+            found_users = User.objects.filter(pk__in=usernames_or_ids)
+
+        if len(found_users) != len(usernames_or_ids):
+            raise NotFound({'usernames_or_ids': ['Not all users found']})
+
+        return found_users
+
+    def check_and_get_tasks(self, tasks_ids):
+
+        if len(tasks_ids) == 0:
+            raise ValidationError({
+                'tasks_ids': [
+                    'You need to specify at least one task_id']})
+
+        tasks = Task.objects.filter(pk__in=tasks_ids)
+
+        if len(tasks) != len(tasks_ids):
+            raise NotFound({'tasks_ids': ['Not all tasks found']})
+
+        return tasks
+
+    def validate(self, attrs):
+
+        user = self.context['request'].user
+        tasks_ids = attrs['tasks_ids'].split(',')
+        usernames_or_ids = attrs['usernames_or_ids'].split(',')
+
+        found_users = self.check_and_get_users(usernames_or_ids)
+        found_users_ids = [user.id for user in found_users]
+
+        # Проверка на то, что пользователю можно показать
+        # эти решения
+        if len(set(found_users_ids) - set([user.id])) > 0 and not user.is_staff:
+            raise PermissionDenied()
+
+        found_tasks = self.check_and_get_tasks(tasks_ids)
+
+        attrs['found_users'] = found_users
+        attrs['found_tasks'] = found_tasks
+
+        return attrs
 
 
 class CommentsListParamsSerializer(serializers.Serializer):
