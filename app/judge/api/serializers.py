@@ -152,6 +152,8 @@ class SolutionsListParamsSerializer(serializers.Serializer):
         else:
             found_users = User.objects.filter(pk__in=usernames_or_ids)
 
+        found_users = found_users.order_by('first_name', 'last_name')
+
         if len(found_users) != len(usernames_or_ids):
             raise NotFound({'usernames_or_ids': ['Not all users found']})
 

@@ -133,14 +133,14 @@ class SolutionsListView(generics.GenericAPIView):
         solutions = Solution.fetch_solutions(found_tasks, found_users, limit)
 
         result = {
-            'tasks': list_to_dict(serialize(
+            'tasks': serialize(
                 serializers.TaskSimpleSerializer,
                 found_tasks,
-                many=True).data, 'id'),
-            'users': list_to_dict(serialize(
+                many=True).data,
+            'users': serialize(
                 serializers.UserSerializer,
                 found_users,
-                many=True).data, 'id')
+                many=True).data
         }
 
         if summary:
