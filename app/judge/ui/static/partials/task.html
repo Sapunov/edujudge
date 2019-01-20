@@ -1,4 +1,5 @@
 <div ng-show="task">
+  <!-- Постановка задачи -->
   <h2>{{ task.id }}. {{ task.title }}
     <small ng-show="alienPage">(задание студента <a ng-href="/users/{{ username }}">{{ username }}</a>)</small>
   </h2>
@@ -20,6 +21,7 @@
         <li>Ограничение по времени - {{ task.timelimit }} сек.</li>
       </ul>
   </div>
+  <!-- Примеры -->
   <div>
     <h3>Примеры</h3>
     <table class="table table-bordered">
@@ -37,10 +39,12 @@
       </tbody>
     </table>
   </div>
+  <!-- Примечания -->
   <div ng-show="task.notes">
     <h3>Примечания</h3>
     <p mathjax-bind="task.notes" class="pre-line"></p>
   </div>
+  <!-- Редактор кода -->
   <div ng-hide="alienPage">
     <h3>Отправить решение</h3>
     <div ng-show="result" class="solution-result">
@@ -73,6 +77,7 @@
         ng-disabled="!source || sent">Отправить на проверку</button>
     </div>
   </div>
+  <!-- Последние решения -->
   <div ng-show="solutions">
     <h3>Последние решения</h3>
     <uib-accordion close-others="(false)">
@@ -100,15 +105,32 @@
             <p class="pre-line">{{ solution.verdict }}</p>
           </blockquote>
         </div>
+
+        <!--
+          Исходный код посылки
+        -->
         <div uib-dropdown>
           <a href="#" class="good-link"
             ng-click="solution.sourceCollapsed = !solution.sourceCollapsed">Исходный код</a>
-          <pre class="input-data"
-            uib-collapse="!solution.sourceCollapsed">{{ solution.source }}</pre>
+          <div class="input-data code-window clearfix" uib-collapse="!solution.sourceCollapsed">
+            <div class="pull-left nums-wrapper">
+              <p
+                ng-repeat="line in solution.source"
+                ng-class="($index+1 === solution.error_line)? 'bg-danger' : ''">{{ $index + 1 }}</p>
+            </div>
+            <div
+              class="code-window-line"
+              ng-repeat="line in solution.source">
+              <pre
+                ng-class="($index+1 === solution.error_line)? 'bg-danger' : 'code-bg'">{{ line }}</pre>
+            </div>
+          </div>
         </div>
+
       </div>
     </uib-accordion>
   </div>
+  <!-- Обсуждения -->
   <div>
     <h3>Обсуждение</h3>
     <div ng-controller="taskCommentsCtrl">
