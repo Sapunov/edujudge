@@ -122,7 +122,7 @@
               class="code-window-line"
               ng-repeat="line in solution.source">
               <pre
-                ng-class="($index+1 === solution.error_line)? 'bg-danger' : 'code-bg'">{{ line }}</pre>
+                ng-class="($index+1 === solution.error_line)? 'bg-danger' : 'code-bg'">{{ line ? line : '\n' }}</pre>
             </div>
           </div>
         </div>
