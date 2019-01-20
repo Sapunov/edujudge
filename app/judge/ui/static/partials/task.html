@@ -112,10 +112,17 @@
         <div uib-dropdown>
           <a href="#" class="good-link"
             ng-click="solution.sourceCollapsed = !solution.sourceCollapsed">Исходный код</a>
-          <div class="input-data code-window" uib-collapse="!solution.sourceCollapsed">
-            <div class="clearfix code-window-line" ng-repeat="line in solution.source">
-              <p class="pull-left">{{ $index + 1 }}</p>
-              <pre>{{ line }}</pre>
+          <div class="input-data code-window clearfix" uib-collapse="!solution.sourceCollapsed">
+            <div class="pull-left nums-wrapper">
+              <p
+                ng-repeat="line in solution.source"
+                ng-class="($index+1 === solution.error_line)? 'bg-danger' : ''">{{ $index + 1 }}</p>
+            </div>
+            <div
+              class="code-window-line"
+              ng-repeat="line in solution.source">
+              <pre
+                ng-class="($index+1 === solution.error_line)? 'bg-danger' : 'code-bg'">{{ line }}</pre>
             </div>
           </div>
         </div>

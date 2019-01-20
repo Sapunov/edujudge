@@ -114,6 +114,7 @@ class Solution(models.Model):
     time = models.DateTimeField(auto_now_add=True)
     source_path = models.FilePathField(path=settings.SOURCE_DIR)
     error = models.SmallIntegerField(default=0)
+    error_line = models.IntegerField(default=-1)
     verdict = models.TextField(default=None, null=True)
     user = models.ForeignKey(User, on_delete=models.PROTECT, related_name='+')
 

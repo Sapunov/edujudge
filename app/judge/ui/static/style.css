@@ -529,15 +529,18 @@ input.ng-dirty.ng-invalid {
   border: 1px solid #ddd;
 }
 
-.code-window-line p {
-  margin:0;
+.code-window .nums-wrapper {
   width: 29px;
-  padding-left: 5px;
-  padding-right: 3px;
   box-sizing: border-box;
-  text-align: right;
   background-color: #f7f7f7;
   border-right: 1px solid #ddd;
+}
+
+.code-window .nums-wrapper p {
+  margin: 0;
+  padding-left: 5px;
+  padding-right: 3px;
+  text-align: right;
   color: #999;
 }
 
@@ -549,5 +552,8 @@ input.ng-dirty.ng-invalid {
   display: block;
   padding-left: 4px;
   font-size: 14px;
+}
+
+.code-bg {
   background-color: #f5f5f5;
 }

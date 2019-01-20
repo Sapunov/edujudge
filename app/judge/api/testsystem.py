@@ -16,6 +16,24 @@ def mask_output(output):
     return re.sub(r'"' + settings.SOURCE_DIR + r'.*"', 'solution.py', output)
 
 
+def fetch_line(output):
+
+    lines = output.split('\n')
+    target_line = None
+    for i, line in enumerate(lines):
+        if 'solution.py' in line:
+            target_line = i
+            break
+
+    if target_line is not None:
+        match = re.search('line ([0-9]+)', lines[target_line])
+        if match:
+            num = int(match.group(1))
+            return num
+
+    return -1
+
+
 def interpreter_test(solution_path, input, timelimit):
 
     error_code = 0
@@ -82,6 +100,7 @@ def test_solution(solution_id):
             if error_code != 0:
                 solution.error = error_code
                 solution.verdict = output
+                solution.error_line = fetch_line(output)
             else:
                 solution.error = 2
 
@@ -107,7 +126,8 @@ def test_solution(solution_id):
         'verdict': solution.verdict,
         'testnum': solution.testnum,
         'task_id': solution.task.id,
-        'test': test_input
+        'test': test_input,
+        'error_line': solution.error_line
     }
 
     verdict = 'Все правильно!' if solution.error == 0 else 'Есть ошибки :=('
@@ -119,7 +139,7 @@ def test_solution(solution_id):
         alert_msg='<a href="/tasks/{0}">Задание #{0}</a> проверено. {1}'.format(solution.task.id, verdict)
     )
 
-    # Сообщение для преподавателей, которое обновит /students
+    # Сообщение для преподавателей, которое обновит /dashboard
     staff = get_staff_ids(exclude=[solution.user.id])
     log.debug('Sending `students_did` msg to %s' % staff)
     send_message(
