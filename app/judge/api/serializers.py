@@ -216,7 +216,7 @@ class SolutionsListSerializer(serializers.Serializer):
     error = serializers.IntegerField()
     verdict = serializers.CharField()
     error_description = serializers.CharField()
-    source = serializers.CharField()
+    source = serializers.ListField(child=serializers.CharField())
 
 
 class TaskOnlySerializer(serializers.Serializer):

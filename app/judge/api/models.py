@@ -180,7 +180,7 @@ class Solution(models.Model):
     def source(self):
 
         with open(self.source_path) as fd:
-            return fd.read()
+            return fd.read().split('\n')
 
     @property
     def error_description(self):

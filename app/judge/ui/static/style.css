@@ -524,3 +524,30 @@ input.ng-dirty.ng-invalid {
 .cell-green {
   background-color: #5cb85c;
 }
+
+.code-window {
+  border: 1px solid #ddd;
+}
+
+.code-window-line p {
+  margin:0;
+  width: 29px;
+  padding-left: 5px;
+  padding-right: 3px;
+  box-sizing: border-box;
+  text-align: right;
+  background-color: #f7f7f7;
+  border-right: 1px solid #ddd;
+  color: #999;
+}
+
+.code-window-line pre {
+  margin:0;
+  padding:0;
+  border: none;
+  border-radius: 0;
+  display: block;
+  padding-left: 4px;
+  font-size: 14px;
+  background-color: #f5f5f5;
+}
