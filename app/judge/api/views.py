@@ -174,16 +174,6 @@ class UsersView(APIView):
 
         if request.user.is_staff:
             users = User.objects.filter(is_staff=False)
-            for user in users:
-                user_tasks = Task.all_with_user_solution(user)
-                tasks_solved = len([_ for _ in user_tasks if _.solved == 1])
-                tasks_failed = len([_ for _ in user_tasks if _.solved == 0])
-                tasks_untouched = len([_ for _ in user_tasks if _.solved == -1])
-                #
-                setattr(user, 'tasks_solved', tasks_solved)
-                setattr(user, 'tasks_failed', tasks_failed)
-                setattr(user, 'tasks_untouched', tasks_untouched)
-
             serializer = serialize(serializers.UserSerializer, users, many=True)
             users_data = serializer.data
 

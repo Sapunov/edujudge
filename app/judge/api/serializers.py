@@ -232,14 +232,9 @@ class TaskOnlySerializer(serializers.Serializer):
 
 class UserSerializer(serializers.ModelSerializer):
 
-    tasks_solved = serializers.IntegerField(required=False, read_only=True)
-    tasks_failed = serializers.IntegerField(required=False, read_only=True)
-    tasks_untouched = serializers.IntegerField(required=False, read_only=True)
-
     class Meta:
         model = User
-        fields = ('id', 'username', 'first_name', 'last_name', 'is_staff',
-                  'tasks_solved','tasks_failed','tasks_untouched')
+        fields = ('id', 'username', 'first_name', 'last_name', 'is_staff')
 
 class IMMessagesSerializer(serializers.Serializer):
 
