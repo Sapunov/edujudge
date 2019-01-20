@@ -166,7 +166,7 @@ class SolutionsListParamsSerializer(serializers.Serializer):
                 'tasks_ids': [
                     'You need to specify at least one task_id']})
 
-        tasks = Task.objects.filter(pk__in=tasks_ids)
+        tasks = Task.objects.filter(pk__in=tasks_ids).order_by('id')
 
         if len(tasks) != len(tasks_ids):
             raise NotFound({'tasks_ids': ['Not all tasks found']})
