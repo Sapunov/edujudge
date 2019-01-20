@@ -133,14 +133,14 @@ class SolutionsListView(generics.GenericAPIView):
         solutions = Solution.fetch_solutions(found_tasks, found_users, limit)
 
         result = {
-            'tasks': list_to_dict(serialize(
+            'tasks': serialize(
                 serializers.TaskSimpleSerializer,
                 found_tasks,
-                many=True).data, 'id'),
-            'users': list_to_dict(serialize(
+                many=True).data,
+            'users': serialize(
                 serializers.UserSerializer,
                 found_users,
-                many=True).data, 'id')
+                many=True).data
         }
 
         if summary:
@@ -174,16 +174,6 @@ class UsersView(APIView):
 
         if request.user.is_staff:
             users = User.objects.filter(is_staff=False)
-            for user in users:
-                user_tasks = Task.all_with_user_solution(user)
-                tasks_solved = len([_ for _ in user_tasks if _.solved == 1])
-                tasks_failed = len([_ for _ in user_tasks if _.solved == 0])
-                tasks_untouched = len([_ for _ in user_tasks if _.solved == -1])
-                #
-                setattr(user, 'tasks_solved', tasks_solved)
-                setattr(user, 'tasks_failed', tasks_failed)
-                setattr(user, 'tasks_untouched', tasks_untouched)
-
             serializer = serialize(serializers.UserSerializer, users, many=True)
             users_data = serializer.data
 

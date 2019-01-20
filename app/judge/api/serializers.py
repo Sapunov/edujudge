@@ -152,6 +152,8 @@ class SolutionsListParamsSerializer(serializers.Serializer):
         else:
             found_users = User.objects.filter(pk__in=usernames_or_ids)
 
+        found_users = found_users.order_by('first_name', 'last_name')
+
         if len(found_users) != len(usernames_or_ids):
             raise NotFound({'usernames_or_ids': ['Not all users found']})
 
@@ -232,14 +234,9 @@ class TaskOnlySerializer(serializers.Serializer):
 
 class UserSerializer(serializers.ModelSerializer):
 
-    tasks_solved = serializers.IntegerField(required=False, read_only=True)
-    tasks_failed = serializers.IntegerField(required=False, read_only=True)
-    tasks_untouched = serializers.IntegerField(required=False, read_only=True)
-
     class Meta:
         model = User
-        fields = ('id', 'username', 'first_name', 'last_name', 'is_staff',
-                  'tasks_solved','tasks_failed','tasks_untouched')
+        fields = ('id', 'username', 'first_name', 'last_name', 'is_staff')
 
 class IMMessagesSerializer(serializers.Serializer):
 
