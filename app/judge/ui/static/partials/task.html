@@ -115,12 +115,12 @@
           <div class="input-data code-window clearfix" uib-collapse="!solution.sourceCollapsed">
             <div class="pull-left nums-wrapper">
               <p
-                ng-repeat="line in solution.source"
+                ng-repeat="line in solution.source track by $index"
                 ng-class="($index+1 === solution.error_line)? 'bg-danger' : ''">{{ $index + 1 }}</p>
             </div>
             <div
               class="code-window-line"
-              ng-repeat="line in solution.source">
+              ng-repeat="line in solution.source track by $index">
               <pre
                 ng-class="($index+1 === solution.error_line)? 'bg-danger' : 'code-bg'">{{ line ? line : '\n' }}</pre>
             </div>
