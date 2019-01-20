@@ -15,7 +15,7 @@ from judge.api.testsystem import test_solution
 from judge.api.im import get_user_messages
 from judge.api.models import Task, Solution, Comment
 from judge.api import im
-from judge.api.common import word_gent, get_staff_ids, get_logger
+from judge.api.common import inflect_name, get_staff_ids, get_logger
 from judge.api.testgenerators import generate_tests
 from judge.api.common import list_to_dict
 
@@ -253,14 +253,20 @@ class CommentsView(APIView):
             users.append(comment.task_owner.id)
 
         try:
+            name_inflected = inflect_name(
+                serializer.data['user']['first_name'],
+                serializer.data['user']['last_name'])
+            msg = '<a href="/tasks/{task_id}?username={comment_username}">Новый комментарий</a>' \
+                + ' от <a href="/users/{commenter_username}">{commenter}</a> в задании #{task_id}'
             im.send_message(
                 user_id=users,
                 msg_type='new_comment',
                 message=serializer.data,
-                alert_msg='Новый комментарий от {0} {1} в задании {2}'.format(
-                    word_gent(serializer.data['user']['first_name']),
-                    word_gent(serializer.data['user']['last_name']),
-                    comment.task.id
+                alert_msg=msg.format(
+                    task_id=comment.task.id,
+                    comment_username=serializer.validated_data['username'],
+                    commenter_username=serializer.data['user']['username'],
+                    commenter=name_inflected
                 )
             )
         except Exception as exc:

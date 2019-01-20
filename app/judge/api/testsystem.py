@@ -116,7 +116,7 @@ def test_solution(solution_id):
         user_id=solution.user.id,
         msg_type='test_complete',
         message=msg,
-        alert_msg='Задание {0} проверено. {1}'.format(solution.task.id, verdict)
+        alert_msg='<a href="/tasks/{0}">Задание #{0}</a> проверено. {1}'.format(solution.task.id, verdict)
     )
 
     # Сообщение для преподавателей, которое обновит /students

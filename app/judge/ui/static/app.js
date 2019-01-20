@@ -40,7 +40,7 @@ serialize = function(obj) {
 
         $timeout(function() {
             $scope.status_message = '';
-        }, 5 * 1000);
+        }, 10 * 1000);
     }
 
     $scope.say_error = function(text) {
@@ -547,7 +547,7 @@ function DashboardCtrl($scope, $http, $routeParams, $location) {
     }
 }
 ;(function() {
-    angular.module('judge', ['ngRoute', 'ui.bootstrap', 'ui.codemirror'])
+    angular.module('judge', ['ngSanitize', 'ngRoute', 'ui.bootstrap', 'ui.codemirror'])
 
     .controller('baseCtrl', BaseCtrl)
     .controller('headerCtrl', HeaderCtrl)

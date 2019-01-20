@@ -11,16 +11,23 @@ def get_logger(name):
     return logging.getLogger(name)
 
 
-def word_gent(word):
+def word_gent(word, gender=None):
 
     morph = pymorphy2.MorphAnalyzer()
 
     objects = morph.parse(word)
 
+    if not len(objects):
+        return word, gender
+
     if len(objects) > 1:
         objects.sort(key=lambda it: len(it.normal_form), reverse=True)
 
+    if gender is not None:
+        objects = list(filter(lambda it: it.tag.gender == gender, objects))
+
     objectt = objects[0]
+    gender = objectt.tag.gender
 
     inflected_result = objectt.inflect({'gent'})
     if inflected_result:
@@ -29,8 +36,16 @@ def word_gent(word):
         if word[0].isupper():
             inflected = inflected.capitalize()
 
-        return inflected
-    return word
+        return inflected, gender
+    return word, gender
+
+
+def inflect_name(name, surname):
+
+    name_inflected, gender = word_gent(name)
+    surname_inflected, _ = word_gent(surname, gender)
+
+    return '{} {}'.format(name_inflected, surname_inflected)
 
 
 def get_staff_ids(exclude=None):

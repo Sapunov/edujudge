@@ -15,7 +15,7 @@ function BaseCtrl($scope, $timeout, $http, $interval) {
 
         $timeout(function() {
             $scope.status_message = '';
-        }, 5 * 1000);
+        }, 10 * 1000);
     }
 
     $scope.say_error = function(text) {
