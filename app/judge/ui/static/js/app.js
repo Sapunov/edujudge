@@ -1,5 +1,5 @@
 (function() {
-    angular.module('judge', ['ngRoute', 'ui.bootstrap', 'ui.codemirror'])
+    angular.module('judge', ['ngSanitize', 'ngRoute', 'ui.bootstrap', 'ui.codemirror'])
 
     .controller('baseCtrl', BaseCtrl)
     .controller('headerCtrl', HeaderCtrl)
