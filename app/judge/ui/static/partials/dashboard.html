@@ -26,7 +26,13 @@
             </td>
             <td
               ng-repeat="task in tasks"
-              ng-class="determineClass(summary[user.id][task.id])">
+              ng-class="determineClass(summary[user.id][task.id])"
+              style="padding: 0;height:100%"
+              >
+              <a style="height:37px;display:block;"
+                href='/tasks/{{task.id}}?username={{user.username}}'>
+                <span style="visibility:hidden">-</span>
+              </a>
             </td>
           </tr>
         </tbody>
