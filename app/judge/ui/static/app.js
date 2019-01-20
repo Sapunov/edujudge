@@ -14,6 +14,15 @@ def generate():
   # Your code here...
 
   return str(test), str(answer)`;
+
+serialize = function(obj) {
+  var str = [];
+  for (var p in obj)
+    if (obj.hasOwnProperty(p)) {
+      str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+    }
+  return str.join("&");
+}
 ;function BaseCtrl($scope, $timeout, $http, $interval) {
 
     $scope.judge_version = judge.version;
@@ -463,15 +472,13 @@ function DashboardCtrl($scope, $http, $routeParams, $location) {
 
     function updateSuggestLink() {
         $scope.suggest_link = $location.path();
-        if ($scope.all_tasks || $scope.not_staff_users) {
-            $scope.suggest_link += '?';
-        }
-        if ($scope.all_tasks) {
-            $scope.suggest_link += 'tasks_ids=' + $scope.all_tasks.map(({id}) => id).join(',') + '&';
-        }
-        if ($scope.not_staff_users) {
-            $scope.suggest_link += 'usernames_or_ids=' + $scope.not_staff_users.map(({id}) => id).join(',')
-        }
+        const query = {
+            tasks_ids: $scope.all_tasks
+                ? $scope.all_tasks.map(({id}) => id).join(',') : '',
+            usernames_or_ids: $scope.not_staff_users
+                ? $scope.not_staff_users.map(({id}) => id).join(',') : ''
+        };
+        $scope.suggest_link += '?' + serialize(query);
     }
 
     function loadSolutionsSummary(tasks_ids, usernames_or_ids) {
@@ -498,7 +505,7 @@ function DashboardCtrl($scope, $http, $routeParams, $location) {
         .then(function(response) {
             if ( response.status === 200 ) {
                 $scope.not_staff_users = response.data;
-                updateSuggestLink
+                updateSuggestLink();
             }
         }, $scope.errorHandler);
     }

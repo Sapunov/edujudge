@@ -14,3 +14,12 @@ def generate():
   # Your code here...
 
   return str(test), str(answer)`;
+
+serialize = function(obj) {
+  var str = [];
+  for (var p in obj)
+    if (obj.hasOwnProperty(p)) {
+      str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+    }
+  return str.join("&");
+}
