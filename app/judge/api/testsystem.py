@@ -9,6 +9,7 @@ from judge.api import exceptions
 from judge.api.common import get_staff_ids
 from judge.api.im import send_message
 from judge.api.models import Solution
+from judge.api.testcheckers import run_checker
 
 log = logging.getLogger('main.' + __name__)
 
@@ -85,6 +86,12 @@ def match_solution_by_lines(output, right):
             raise exceptions.TestWrongAnswer()
 
 
+def match_solution_with_checker(test_input, test_output, user_output, checker_path):
+
+    if not run_checker(test_input, test_output, user_output, checker_path):
+        raise exceptions.TestWrongAnswer()
+
+
 def notify_about_solution(solution):
 
     if solution.test is not None:
@@ -138,7 +145,17 @@ def test_solution(solution_id):
                 solution.source_path,
                 test.text,
                 timelimit)
-            match_solution_by_lines(output, test.answer)
+            if solution.task.has_checker:
+                log.debug('Check %s with checker: %s' % (
+                    solution, solution.task.test_checker_path))
+                match_solution_with_checker(
+                    test.text,
+                    test.answer,
+                    output,
+                    solution.task.test_checker_path)
+            else:
+                log.debug('Match %s with simple string checker' % solution)
+                match_solution_by_lines(output, test.answer)
         except exceptions.TestException as exc:
             log.debug('Get exception: %s on %s for %s' % (exc.name, test, solution))
             solution.test = test

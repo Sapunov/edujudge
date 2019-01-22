@@ -1,25 +1,12 @@
 import sys
 import os.path
 from importlib import import_module
+import logging
 
 from judge.api.models import Task
-from judge.api import serializers
 from judge.api import im
 
-
-class ResultItem:
-
-    def __init__(self, text, answer):
-
-        self.text = text
-        self.answer = answer
-
-class Result:
-
-    def __init__(self, path, items):
-
-        self.test_generator = path
-        self.tests = items
+log = logging.getLogger('main.' + __name__)
 
 
 def check_module(module):
@@ -83,3 +70,23 @@ def load_and_check_module(path_to_script, user_id):
             msg_type='error_testchecker',
             message=module_or_error,
             alert_msg='Во время сохранения чекера произошла ошибка')
+
+
+def run_checker(test_input, test_output, user_output, checker_path):
+
+    ok, module_or_error, script_name = load_module(checker_path)
+
+    if ok:
+        try:
+            return getattr(module_or_error, 'check_test')(
+                test_input, test_output, user_output)
+        except Exception as e:
+            log.error('Exception while running checker. ' \
+                'test_input=%s, test_output=%s, user_output=%s, ' \
+                'checker_path=%s' % (test_input, test_output, user_output, checker_path))
+            log.excption(e)
+            return False
+    else:
+        log.error('Error while loading and checking checker: %s' % module_or_error)
+
+    return False

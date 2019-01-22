@@ -21,6 +21,11 @@ class Task(models.Model):
     test_checker_path = models.FilePathField(
         path=settings.TEST_CHECKERS_DIR, blank=True, null=True)
 
+    @property
+    def has_checker(self):
+
+        return self.test_checker_path is not None
+
     @classmethod
     def all_with_user_solution(cls, user):
 
@@ -95,6 +100,14 @@ class Task(models.Model):
                 pass
             else:
                 raise
+
+    @property
+    def checker_source(self):
+
+        if self.has_checker:
+            with open(self.test_checker_path) as fd:
+                return fd.read()
+        return ''
 
     def __str__(self):
 
