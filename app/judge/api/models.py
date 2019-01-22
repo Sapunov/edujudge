@@ -109,14 +109,15 @@ class Test(models.Model):
 class Solution(models.Model):
 
     task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name='solutions')
+    source_path = models.FilePathField(path=settings.SOURCE_DIR)
+    user = models.ForeignKey(User, on_delete=models.PROTECT, related_name='+')
+    time = models.DateTimeField(auto_now_add=True)
+    # Fills after solution check
     test = models.ForeignKey(Test, on_delete=models.CASCADE, default=None, null=True)
     testnum = models.SmallIntegerField(default=0)
-    time = models.DateTimeField(auto_now_add=True)
-    source_path = models.FilePathField(path=settings.SOURCE_DIR)
     error = models.SmallIntegerField(default=0)
     error_line = models.IntegerField(default=-1)
     verdict = models.TextField(default=None, null=True)
-    user = models.ForeignKey(User, on_delete=models.PROTECT, related_name='+')
 
     @classmethod
     def fetch_solutions(cls, tasks, users, limit=-1):
@@ -196,7 +197,7 @@ class Solution(models.Model):
     def __str__(self):
 
         return 'Solution #{0} for task #{1} by <{2}>'.format(
-            self.id, self.task.id, self.user,)
+            self.id, self.task.id, self.user)
 
     class Meta:
 

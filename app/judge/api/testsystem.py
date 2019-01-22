@@ -4,19 +4,24 @@ from subprocess import PIPE, Popen, TimeoutExpired
 
 from django.conf import settings
 
-from judge.api.models import Solution
-from judge.api.im import send_message
+from judge.api import constants
+from judge.api import exceptions
 from judge.api.common import get_staff_ids
+from judge.api.im import send_message
+from judge.api.models import Solution
 
 log = logging.getLogger('main.' + __name__)
 
 
 def mask_output(output):
+    '''Замена реального пути к файлу с кодом на стандартный.'''
 
     return re.sub(r'"' + settings.SOURCE_DIR + r'.*"', 'solution.py', output)
 
 
 def fetch_line(output):
+    '''Возвращает строку на которой произошла ошибка
+    '''
 
     lines = output.split('\n')
     target_line = None
@@ -34,33 +39,35 @@ def fetch_line(output):
     return -1
 
 
-def interpreter_test(solution_path, input, timelimit):
-
-    error_code = 0
+def interpreter_test(solution_path, input_text, timelimit):
+    '''Тест интерпретатором с входными данными
+    '''
     output = None
-    out = err = b''
+    s_out = s_err = b''
 
-    bytes_input = bytes(input, 'utf-8')
+    bytes_input = bytes(input_text, 'utf-8')
 
     proc = Popen(
         ['python3', solution_path], stdin=PIPE, stdout=PIPE, stderr=PIPE)
 
     try:
-        out, err = proc.communicate(input=bytes_input, timeout=timelimit)
+        s_out, s_err = proc.communicate(input=bytes_input, timeout=timelimit)
 
-        if err:
-            error_code = 1
-
+        if s_err:
+            error_out = s_err.decode()
+            raise exceptions.TestCompilingError(msg=error_out)
     except TimeoutExpired:
-        error_code = 3
+        raise exceptions.TimeLimitExceededException()
 
-    output = out.decode() if error_code == 0 else err.decode()
-    output = mask_output(output)
+    output = mask_output(s_out.decode())
 
-    return (error_code, output)
+    return output
 
 
-def match_solutions(output, right):
+def match_solution_by_lines(output, right):
+    '''Простое построчное сравнение ответа программы студента
+        с эталонным ответом на тест.
+    '''
 
     output = output.strip()
     right = right.strip()
@@ -68,55 +75,23 @@ def match_solutions(output, right):
     output_lines, right_lines = output.split('\n'), right.split('\n')
 
     if len(output_lines) != len(right_lines):
-        return False
+        raise exceptions.TestWrongAnswer()
 
-    for i in range(len(right_lines)):
+    for i, right_line in enumerate(right_lines):
         output_line = output_lines[i].strip()
-        right_line = right_lines[i].strip()
+        right_line = right_line.strip()
 
         if output_line != right_line:
-            return False
-
-    return True
+            raise exceptions.TestWrongAnswer()
 
 
-def test_solution(solution_id):
-
-    solution = Solution.objects.get(pk=solution_id)
-
-    timelimit = solution.task.timelimit
-
-    for i, test in enumerate(solution.task.tests.order_by('id')):
-        error_code, output = interpreter_test(
-            solution.source_path,
-            test.text,
-            timelimit
-        )
-
-        if error_code != 0 or not match_solutions(output, test.answer):
-            solution.test = test
-            solution.testnum = i + 1
-
-            if error_code != 0:
-                solution.error = error_code
-                solution.verdict = output
-                solution.error_line = fetch_line(output)
-            else:
-                solution.error = 2
-
-            break
-    else:
-        solution.verdict = 'ok'
-
-    solution.save()
+def notify_about_solution(solution):
 
     if solution.test is not None:
         test_input = solution.test.text
-
         if len(test_input) > settings.TEST_INPUT_MAX_LEN:
             test_input = test_input[:settings.TEST_INPUT_MAX_LEN]
             test_input += ' <данные обрезаны из-за большого размера>'
-
     else:
         test_input = None
 
@@ -130,20 +105,57 @@ def test_solution(solution_id):
         'error_line': solution.error_line
     }
 
-    verdict = 'Все правильно!' if solution.error == 0 else 'Есть ошибки :=('
+    alert_verdict = 'Все правильно!' if solution.error == constants.TEST_OK \
+        else 'Есть ошибки :=('
 
     send_message(
         user_id=solution.user.id,
         msg_type='test_complete',
         message=msg,
-        alert_msg='<a href="/tasks/{0}">Задание #{0}</a> проверено. {1}'.format(solution.task.id, verdict)
+        alert_msg='<a href="/tasks/{0}">Задание #{0}</a> проверено. {1}'.format(
+            solution.task.id, alert_verdict)
     )
 
     # Сообщение для преподавателей, которое обновит /dashboard
     staff = get_staff_ids(exclude=[solution.user.id])
-    log.debug('Sending `students_did` msg to %s' % staff)
     send_message(
         user_id=staff,
         msg_type='students_did',
-        message={}
+        message=None
     )
+
+
+def test_solution(solution_id):
+
+    solution = Solution.objects.get(pk=solution_id)
+    timelimit = solution.task.timelimit
+
+    log.debug('Start testing %s with timelimit=%s seconds' % (solution, timelimit))
+
+    for i, test in enumerate(solution.task.tests.order_by('id')):
+        try:
+            output = interpreter_test(
+                solution.source_path,
+                test.text,
+                timelimit)
+            match_solution_by_lines(output, test.answer)
+        except exceptions.TestException as exc:
+            log.debug('Get exception: %s on %s for %s' % (exc.name, test, solution))
+            solution.test = test
+            solution.testnum = i + 1
+
+            if isinstance(exc, exceptions.TimeLimitExceededException):
+                solution.error = constants.TEST_TIME_LIMIT_EXCEEDED
+            elif isinstance(exc, exceptions.TestCompilingError):
+                solution.error = constants.TEST_COMPILING_ERROR
+                solution.verdict = mask_output(exc.msg)
+                solution.error_line = fetch_line(solution.verdict)
+            elif isinstance(exc, exceptions.TestWrongAnswer):
+                solution.error = constants.TEST_WRONG_ANSWER
+
+            break
+    else:  # Ни разу не был выполнен break
+        solution.verdict = 'ok'
+
+    solution.save()
+    notify_about_solution(solution)
