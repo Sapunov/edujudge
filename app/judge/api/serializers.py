@@ -58,14 +58,19 @@ class TaskSerializer(serializers.Serializer):
     timelimit = serializers.IntegerField()
     tests = TaskTestSerializer(many=True)
     test_generator_path = serializers.CharField(allow_null=True)
+    test_checker_path = serializers.CharField(allow_null=True)
 
     def create(self, validated_data):
 
         notes = validated_data.get('notes')
         generator_path = validated_data.get('test_generator_path')
+        checker_path = validated_data.get('test_checker_path')
 
         if generator_path is not None:
             generator_path = os.path.join(settings.TEST_GENERATORS_DIR, generator_path)
+
+        if checker_path is not None:
+            checker_path = os.path.join(settings.TEST_CHECKERS_DIR, checker_path)
 
         task = Task.objects.create(
             title=validated_data['title'],
@@ -75,7 +80,8 @@ class TaskSerializer(serializers.Serializer):
             timelimit=validated_data['timelimit'],
             author=validated_data['user'],
             notes=notes if notes else None,
-            test_generator_path=generator_path
+            test_generator_path=generator_path,
+            test_checker_path=checker_path
         )
 
         for testitem in validated_data['tests']:

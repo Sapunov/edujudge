@@ -17,6 +17,7 @@ from judge.api.models import Task, Solution, Comment
 from judge.api import im
 from judge.api.common import inflect_name, get_staff_ids, get_logger
 from judge.api.testgenerators import generate_tests
+from judge.api.testcheckers import load_and_check_module
 from judge.api.common import list_to_dict
 
 
@@ -298,5 +299,25 @@ class TestsGenerateView(APIView):
         )
 
         django_rq.enqueue(generate_tests, script_path, request.user.id)
+
+        return Response(status=status.HTTP_200_OK)
+
+
+class TestsCheckerView(APIView):
+
+    def post(self, request):
+
+        if not request.user.is_staff:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
+        serializer_in = deserialize(
+            serializers.TestsGenerateSerializer, request.data)
+
+        script_path = Task.save_test_checker(
+            serializer_in.validated_data['source'],
+            Task.get_test_checker_path(request.user)
+        )
+
+        django_rq.enqueue(load_and_check_module, script_path, request.user.id)
 
         return Response(status=status.HTTP_200_OK)

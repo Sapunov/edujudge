@@ -15,8 +15,14 @@ class SolutionAdmin(admin.ModelAdmin):
     readonly_fields = ('task', 'test', 'user', 'source')
     exclude = ('source_path',)
 
+class TaskAdmin(admin.ModelAdmin):
 
-admin.site.register(Task)
+    list_display = ('id', 'title', 'author', 'test_checker_path')
+    ordering = ('-id',)
+    readonly_fields = ('checker_source',)
+
+
+admin.site.register(Task, TaskAdmin)
 admin.site.register(Comment, CommentAdmin)
 admin.site.register(Test)
 admin.site.register(Example)

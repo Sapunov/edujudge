@@ -18,6 +18,13 @@ class Task(models.Model):
     author = models.ForeignKey(User, on_delete=models.PROTECT, related_name='+')
     test_generator_path = models.FilePathField(
         path=settings.TEST_GENERATORS_DIR, blank=True, null=True)
+    test_checker_path = models.FilePathField(
+        path=settings.TEST_CHECKERS_DIR, blank=True, null=True)
+
+    @property
+    def has_checker(self):
+
+        return self.test_checker_path is not None
 
     @classmethod
     def all_with_user_solution(cls, user):
@@ -46,7 +53,26 @@ class Task(models.Model):
         )
 
     @staticmethod
+    def get_test_checker_path(user):
+
+        return os.path.join(
+            settings.TEST_CHECKERS_DIR,
+            'testchecker_{user_id}_{date}.py'.format(
+                user_id=user.id,
+                date=datetime.now().strftime('%Y%m%d_%H%M%S')
+            )
+        )
+
+    @staticmethod
     def save_test_generator(source, path):
+
+        with open(path, 'w') as fd:
+            fd.write(source)
+
+        return path
+
+    @staticmethod
+    def save_test_checker(source, path):
 
         with open(path, 'w') as fd:
             fd.write(source)
@@ -63,6 +89,25 @@ class Task(models.Model):
                 pass
             else:
                 raise
+
+    @staticmethod
+    def remove_test_checker(path):
+
+        try:
+            os.remove(path)
+        except IOError as e:
+            if e.errno == errno.ENOENT:
+                pass
+            else:
+                raise
+
+    @property
+    def checker_source(self):
+
+        if self.has_checker:
+            with open(self.test_checker_path) as fd:
+                return fd.read()
+        return ''
 
     def __str__(self):
 
@@ -109,14 +154,15 @@ class Test(models.Model):
 class Solution(models.Model):
 
     task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name='solutions')
+    source_path = models.FilePathField(path=settings.SOURCE_DIR)
+    user = models.ForeignKey(User, on_delete=models.PROTECT, related_name='+')
+    time = models.DateTimeField(auto_now_add=True)
+    # Fills after solution check
     test = models.ForeignKey(Test, on_delete=models.CASCADE, default=None, null=True)
     testnum = models.SmallIntegerField(default=0)
-    time = models.DateTimeField(auto_now_add=True)
-    source_path = models.FilePathField(path=settings.SOURCE_DIR)
     error = models.SmallIntegerField(default=0)
     error_line = models.IntegerField(default=-1)
     verdict = models.TextField(default=None, null=True)
-    user = models.ForeignKey(User, on_delete=models.PROTECT, related_name='+')
 
     @classmethod
     def fetch_solutions(cls, tasks, users, limit=-1):
@@ -196,7 +242,7 @@ class Solution(models.Model):
     def __str__(self):
 
         return 'Solution #{0} for task #{1} by <{2}>'.format(
-            self.id, self.task.id, self.user,)
+            self.id, self.task.id, self.user)
 
     class Meta:
 

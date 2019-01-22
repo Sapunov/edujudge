@@ -1,4 +1,4 @@
-let generator_skeleton = `# The function generate will be called as many times
+const generator_skeleton = `# The function generate will be called as many times
 # as specified in this variable
 NUMBER_OF_TESTS = 0
 
@@ -14,6 +14,14 @@ def generate():
   # Your code here...
 
   return str(test), str(answer)`;
+
+const checker_skeleton = `def check_test(test_input, test_output, user_output):
+  """Checker function.
+  """
+
+  # Your code here...
+
+  return False`;
 
 serialize = function(obj) {
   var str = [];
