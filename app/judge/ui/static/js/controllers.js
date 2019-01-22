@@ -2,7 +2,7 @@ function BaseCtrl($scope, $timeout, $http, $interval) {
 
     $scope.judge_version = judge.version;
 
-    $scope.status_message = '';
+    $scope.status_messages = [];
     $scope.solved_statuses = {
         '-1': 'hide',
         '0': 'glyphicon glyphicon-remove red',
@@ -11,10 +11,10 @@ function BaseCtrl($scope, $timeout, $http, $interval) {
 
     $scope.say = function(text) {
 
-        $scope.status_message = text;
+        $scope.status_messages.unshift(text);
 
         $timeout(function() {
-            $scope.status_message = '';
+            $scope.status_messages.splice(-1,1)
         }, 10 * 1000);
     }
 
@@ -22,10 +22,10 @@ function BaseCtrl($scope, $timeout, $http, $interval) {
 
         text = text || 'Произошла ошибка';
 
-        $scope.status_message = text;
+        $scope.status_messages.unshift(text);
 
         $timeout(function() {
-            $scope.status_message = '';
+            $scope.status_messages.splice(-1,1)
         }, 10 * 1000);
     }
 
@@ -52,8 +52,8 @@ function BaseCtrl($scope, $timeout, $http, $interval) {
             $http.get(judge.api + '/im')
             .then(function(response) {
                 if ( response.status === 200 ) {
-                    let msgs = response.data.messages,
-                        data;
+                    let msgs = response.data.messages;
+                    let data;
 
                     for ( let i = 0; i < msgs.length; ++i ) {
                         if ( msgs[i].alert_msg !== null ) {
