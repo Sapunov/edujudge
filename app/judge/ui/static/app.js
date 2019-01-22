@@ -1,4 +1,4 @@
-let generator_skeleton = `# The function generate will be called as many times
+const generator_skeleton = `# The function generate will be called as many times
 # as specified in this variable
 NUMBER_OF_TESTS = 0
 
@@ -14,6 +14,14 @@ def generate():
   # Your code here...
 
   return str(test), str(answer)`;
+
+const checker_skeleton = `def check_test(test_input, test_output, user_output):
+  """Checker function.
+  """
+
+  # Your code here...
+
+  return False`;
 
 serialize = function(obj) {
   var str = [];
@@ -142,21 +150,33 @@ function TaskEditCtrl($scope, $http) {
         timelimit: 1,
         tests: [],
         examples: [],
-        test_generator_path: null
+        test_generator_path: null,
+        test_checker_path: null
     };
 
-    $scope.codeTab = false;
-    $scope.codeMirror = {
+    $scope.activeTab = 'tests';
+
+    // Настройки для редактора кода генератора тестов
+    $scope.testsGeneratorCodeMirror = {
+        lineNumbers: true,
+        mode: 'python',
+        readOnly: false
+    }
+    // Настройки для редактора кода проверщика
+    $scope.chekerCodeMirror = {
         lineNumbers: true,
         mode: 'python',
         readOnly: false
     }
     $scope.sent = false;
 
-    $scope.has_error_codegen = false;
-    $scope.error_msg = '';
+    $scope.has_error_testgen = false;
+    $scope.has_error_checker = false;
+    $scope.testgen_error_msg = '';
+    $scope.checker_error_msg = '';
 
-    $scope.source = generator_skeleton;
+    $scope.testsGeneratorSource = generator_skeleton;
+    $scope.checkerSource = checker_skeleton;
 
     $scope.getArray = function(num) {
         return new Array(num);
@@ -209,10 +229,25 @@ function TaskEditCtrl($scope, $http) {
 
         toogle_editing();
 
-        $http.post(judge.api + '/tests/generate', { 'source': $scope.source })
+        $http.post(judge.api + '/tests/generate', { 'source': $scope.testsGeneratorSource })
         .then(function(response) {
             if ( response.status === 200 ) {
                 $scope.say('Код отправлен на обработку');
+            }
+        }, $scope.errorHandler);
+    }
+
+    $scope.saveCheker = function(event) {
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        toogle_editing();
+
+        $http.post(judge.api + '/tests/checker', { 'source': $scope.checkerSource })
+        .then(function(response) {
+            if ( response.status === 200 ) {
+                $scope.say('Код чекера отправлен на обработку');
             }
         }, $scope.errorHandler);
     }
@@ -221,12 +256,12 @@ function TaskEditCtrl($scope, $http) {
 
         switch ( data.type ) {
             case 'error_testgenerating':
-                $scope.has_error_codegen = true;
-                $scope.error_msg = data.data;
+                $scope.has_error_testgen = true;
+                $scope.testgen_error_msg = data.data;
                 toogle_editing();
                 break;
             case 'ok_testgenerating':
-                $scope.has_error_codegen = false;
+                $scope.testgen_error_msg = false;
                 toogle_editing();
 
                 $scope.task.test_generator_path = data.data.test_generator;
@@ -239,8 +274,18 @@ function TaskEditCtrl($scope, $http) {
                 }
 
                 $scope.numOfTests = $scope.task.tests.length;
-
-                $scope.codeTab = false;
+                $scope.activeTab = 'tests';
+                break;
+            case 'error_testchecker':
+                $scope.has_error_checker = true;
+                $scope.checker_error_msg = data.data;
+                toogle_editing();
+                break;
+            case 'ok_testchecker':
+                $scope.has_error_checker = false;
+                toogle_editing();
+                $scope.task.test_checker_path = data.data.test_checker;
+                break;
         }
     });
 
@@ -248,10 +293,12 @@ function TaskEditCtrl($scope, $http) {
 
         if ( $scope.sent ) {
             $scope.sent = false;
-            $scope.codeMirror.readOnly = false;
+            $scope.testsGeneratorCodeMirror.readOnly = false;
+            $scope.chekerCodeMirror.readOnly = false;
         } else {
             $scope.sent = true;
-            $scope.codeMirror.readOnly = true;
+            $scope.testsGeneratorCodeMirror.readOnly = true;
+            $scope.chekerCodeMirror.readOnly = true;
         }
     }
 }

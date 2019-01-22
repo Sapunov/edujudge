@@ -127,6 +127,8 @@ SOURCE_DIR = os.path.join(DATA_DIR, 'user_sources')
 
 TEST_GENERATORS_DIR = os.path.join(DATA_DIR, 'test_generators')
 
+TEST_CHECKERS_DIR = os.path.join(DATA_DIR, 'test_checkers')
+
 TEST_ERRORS = [
     'Полное решение',
     'Ошибка компиляции программы',

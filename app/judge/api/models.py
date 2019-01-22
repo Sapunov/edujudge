@@ -18,6 +18,8 @@ class Task(models.Model):
     author = models.ForeignKey(User, on_delete=models.PROTECT, related_name='+')
     test_generator_path = models.FilePathField(
         path=settings.TEST_GENERATORS_DIR, blank=True, null=True)
+    test_checker_path = models.FilePathField(
+        path=settings.TEST_CHECKERS_DIR, blank=True, null=True)
 
     @classmethod
     def all_with_user_solution(cls, user):
@@ -46,6 +48,17 @@ class Task(models.Model):
         )
 
     @staticmethod
+    def get_test_checker_path(user):
+
+        return os.path.join(
+            settings.TEST_CHECKERS_DIR,
+            'testchecker_{user_id}_{date}.py'.format(
+                user_id=user.id,
+                date=datetime.now().strftime('%Y%m%d_%H%M%S')
+            )
+        )
+
+    @staticmethod
     def save_test_generator(source, path):
 
         with open(path, 'w') as fd:
@@ -54,7 +67,26 @@ class Task(models.Model):
         return path
 
     @staticmethod
+    def save_test_checker(source, path):
+
+        with open(path, 'w') as fd:
+            fd.write(source)
+
+        return path
+
+    @staticmethod
     def remove_test_generator(path):
+
+        try:
+            os.remove(path)
+        except IOError as e:
+            if e.errno == errno.ENOENT:
+                pass
+            else:
+                raise
+
+    @staticmethod
+    def remove_test_checker(path):
 
         try:
             os.remove(path)

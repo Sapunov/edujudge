@@ -75,13 +75,18 @@
     <div>
       <label>Тесты*</label>
       <span class="test-edit-tabs-links">
-        <a href="#" ng-class="(codeTab) ? '' : 'active'"
-          ng-click="codeTab = false">Текстовые</a>
-        <a href="#" ng-class="(codeTab) ? 'active' : ''"
-          ng-click="codeTab = true">Генерация кодом</a>
+        <a href="#" ng-class="(activeTab === 'tests') ? 'active' : ''"
+          ng-click="activeTab = 'tests'">Текстовые</a>
+        <a href="#" ng-class="(activeTab === 'gen') ? 'active' : ''"
+          ng-click="activeTab = 'gen'">Генерация кодом</a>
+        <a href="#" ng-class="(activeTab === 'check') ? 'active' : ''"
+          ng-click="activeTab = 'check'">Код проверки тестов</a>
       </span>
     </div>
-    <div ng-hide="codeTab">
+    <!--
+      Список текстовых тестов
+     -->
+    <div ng-show="activeTab === 'tests'">
       <div class="tests" id="tests-box">
         <div class="row test-item" ng-repeat="i in getArray(numOfTests) track by $index">
           <div class="col-xs-6">
@@ -102,14 +107,18 @@
       </div>
       <a href="#" id="add-test-link" ng-click="numOfTests = numOfTests + 1">Добавить тест</a>
     </div>
-    <div ng-show="codeTab">
+
+    <!--
+      Редактор кода для генерации тестов
+     -->
+    <div ng-show="activeTab === 'gen'">
       <div class="tests">
-        <div ng-show="has_error_codegen">
-          <p class="pre-line testgenerate-error">{{ error_msg }}</p>
+        <div ng-show="has_error_testgen">
+          <p class="pre-line testgenerate-error">{{ testgen_error_msg }}</p>
         </div>
         <div class="task-area-wrapper">
-          <textarea class="task-area" ui-codemirror="codeMirror"
-            ng-model="source" ng-disabled="sent"></textarea>
+          <textarea class="task-area" ui-codemirror="testsGeneratorCodeMirror"
+            ng-model="testsGeneratorSource" ng-disabled="sent"></textarea>
         </div>
         <div class="form-group btn-area">
           <button class="btn btn-success"
@@ -118,6 +127,27 @@
         </div>
       </div>
     </div>
+
+    <!--
+      Редактор кода для проверки каждого теста
+     -->
+    <div ng-show="activeTab === 'check'">
+      <div class="tests">
+        <div ng-show="has_error_checker">
+          <p class="pre-line testgenerate-error">{{ checker_error_msg }}</p>
+        </div>
+        <div class="task-area-wrapper">
+          <textarea class="task-area" ui-codemirror="chekerCodeMirror"
+            ng-model="checkerSource" ng-disabled="sent"></textarea>
+        </div>
+        <div class="form-group btn-area">
+          <button class="btn btn-success"
+            ng-click="saveCheker($event)"
+            ng-disabled="generateForm.$invalid || sent">Сохранить</button>
+        </div>
+      </div>
+    </div>
+
   </div>
   <div class="form-group btn-area-grey">
     <button type="submit" class="btn btn-success"
