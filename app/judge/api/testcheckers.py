@@ -30,7 +30,7 @@ def check_module(module):
     return None
 
 
-def load_module(path_to_script):
+def load_module(path_to_script, check):
 
     module_path, script = path_to_script.rsplit('/', 1)
     module_name, _ = os.path.splitext(script)
@@ -43,17 +43,18 @@ def load_module(path_to_script):
     except Exception as e:
         return ( False, str(e), script )
 
-    checked = check_module(module)
+    if check:
+        checked = check_module(module)
 
-    if checked is not None:
-        return ( False, checked, script )
+        if checked is not None:
+            return ( False, checked, script )
 
     return ( True, module, script )
 
 
-def load_and_check_module(path_to_script, user_id):
+def load_and_check_module(path_to_script, user_id, check=True):
 
-    ok, module_or_error, script_name = load_module(path_to_script)
+    ok, module_or_error, script_name = load_module(path_to_script, check)
 
     if ok:
         im.send_message(
@@ -74,12 +75,15 @@ def load_and_check_module(path_to_script, user_id):
 
 def run_checker(test_input, test_output, user_output, checker_path):
 
-    ok, module_or_error, script_name = load_module(checker_path)
+    ok, module_or_error, script_name = load_module(checker_path, check=False)
 
     if ok:
         try:
             return getattr(module_or_error, 'check_test')(
                 test_input, test_output, user_output)
+        except ValueError as program_error:
+            log.info('Checker raise ValueError: %s' % program_error)
+            return False
         except Exception as e:
             log.error('Exception while running checker. ' \
                 'test_input=%s, test_output=%s, user_output=%s, ' \
