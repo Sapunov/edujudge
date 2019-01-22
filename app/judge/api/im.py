@@ -2,6 +2,7 @@ import redis
 import pickle
 import json
 from hashlib import sha1
+from datetime import datetime
 
 from django.conf import settings
 
@@ -63,7 +64,11 @@ def send_message(user_id, msg_type, message, alert_msg=None):
             'payload': message
         })
 
-        key = '{0}:{1}:{2}'.format(
-            settings.IM_REDIS_PREFIX, user_id, data_hash(data))
+        key = '{0}:{1}:{2}:{3}'.format(
+            settings.IM_REDIS_PREFIX,
+            user_id,
+            data_hash(data),
+            datetime.now()
+            )
 
         connection.set(key, data, ex=settings.IM_REDIS_EX)

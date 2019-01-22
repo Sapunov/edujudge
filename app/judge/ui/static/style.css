@@ -299,14 +299,18 @@
   background-color: #ffefe9;
 }
 
-.messenger {
+.messanger-box {
   position: fixed;
   top: 60px;
   right: 10px;
   z-index: 9999;
+}
+
+.messanger {
   background-color: #424242;
   padding: 15px;
   color: #fff;
+  margin-bottom: 8px;
   -webkit-border-radius: 4px;
   -moz-border-radius: 4px;
   border-radius: 4px;
@@ -315,7 +319,7 @@
   box-shadow: 0px 0px 2px #616161;
 }
 
-.messenger a {
+.messanger a {
   color: #adbdff;
 }
 
