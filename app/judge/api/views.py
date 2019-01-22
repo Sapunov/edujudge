@@ -173,7 +173,7 @@ class UsersView(APIView):
     def get(self, request, format=None):
 
         if request.user.is_staff:
-            users = User.objects.filter(is_staff=False)
+            users = User.objects.filter(is_staff=False).order_by('id')
             serializer = serialize(serializers.UserSerializer, users, many=True)
             users_data = serializer.data
 
