@@ -32,7 +32,7 @@ class Profile(models.Model):
     @property
     def last_active_seconds(self):
 
-        return (timezone.now() - self.last_active).seconds
+        return int((timezone.now() - self.last_active).total_seconds())
 
 
 class Task(models.Model):
