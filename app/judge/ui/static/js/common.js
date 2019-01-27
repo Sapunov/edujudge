@@ -31,3 +31,29 @@ serialize = function(obj) {
     }
   return str.join("&");
 }
+
+function humanizeLastActive(lastActiveSeconds, lastActive) {
+  if (lastActiveSeconds < 60) {
+      return 'только что';
+  }
+
+  const minutes = Math.floor(lastActiveSeconds / 60);
+
+  if (minutes <= 60) {
+      return `${minutes} минут назад`
+  }
+
+  const hours = Math.floor(lastActiveSeconds / 60 * 60);
+
+  if (hours <= 24) {
+      return `${hours} часов назад`;
+  }
+
+  const years = Math.floor(lastActiveSeconds / 60 * 60 * 24 * 365);
+
+  if (years <= 10) {
+      return lastActive;
+  }
+
+  return 'никогда';
+}

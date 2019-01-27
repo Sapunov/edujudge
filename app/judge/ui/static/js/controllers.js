@@ -438,6 +438,7 @@ function UserPageCtrl($scope, $http, $routeParams) {
         '0': 'progress-bar-item pull-left red-bg',
         '1': 'progress-bar-item pull-left green-bg',
     }
+    $scope.lastActiveHuman = null;
 
     $scope.tasks = [];
 
@@ -457,6 +458,9 @@ function UserPageCtrl($scope, $http, $routeParams) {
         .then(function(response) {
             if ( response.status === 200 ) {
                 $scope.user = response.data;
+                $scope.lastActiveHuman = humanizeLastActive(
+                    $scope.user.last_active_seconds,
+                    $scope.user.last_active);
             }
         }, $scope.errorHandler);
     }
