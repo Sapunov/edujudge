@@ -4,11 +4,14 @@
       <img ng-src="/static/images/avatars/{{ user.username }}.png" class="user-profile-image">
     </div>
     <div class="col-sm-9">
-      <div>
-        <p>
+      <div class="clearfix">
+        <div>
           <strong>{{ user.first_name }} {{ user.last_name }}</strong>
           <small class="grey" ng-show="user.is_staff">преподаватель</small>
-        </p>
+        </div>
+        <div>
+          <small class="grey">Был(а) в сети: {{ lastActiveHuman }}</small>
+        </div>
       </div>
       <hr>
       <div>

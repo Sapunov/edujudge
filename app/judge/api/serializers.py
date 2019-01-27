@@ -1,6 +1,6 @@
 import os
-from django.contrib.auth.models import User
 from django.conf import settings
+from django.contrib.auth.models import User
 
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError, NotFound, PermissionDenied
@@ -244,6 +244,13 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('id', 'username', 'first_name', 'last_name', 'is_staff')
+
+
+class ProfileSerializer(serializers.Serializer):
+
+    last_active = serializers.DateTimeField(format=settings.UI_DATETIME_FORMAT)
+    last_active_seconds = serializers.IntegerField()
+
 
 class IMMessagesSerializer(serializers.Serializer):
 

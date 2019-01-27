@@ -1,10 +1,38 @@
 import os
 import errno
+import pytz
 
-from django.db import models
-from django.contrib.auth.models import User
 from django.conf import settings
+from django.contrib.auth.models import User
+from django.db import models
+from django.utils import timezone
+
 from datetime import datetime
+
+
+class Profile(models.Model):
+
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    last_active = models.DateTimeField(default=datetime(1970, 1, 1, tzinfo=pytz.utc))
+
+    @classmethod
+    def get_user_profile(cls, user):
+
+        try:
+            return Profile.objects.get(user=user)
+        except Profile.DoesNotExist:
+            profile = Profile.objects.create(user=user)
+            return profile
+
+    def mark_active(self):
+
+        self.last_active = timezone.now()
+        self.save()
+
+    @property
+    def last_active_seconds(self):
+
+        return (timezone.now() - self.last_active).seconds
 
 
 class Task(models.Model):

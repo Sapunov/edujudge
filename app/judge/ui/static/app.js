@@ -31,6 +31,32 @@ serialize = function(obj) {
     }
   return str.join("&");
 }
+
+function humanizeLastActive(lastActiveSeconds, lastActive) {
+  if (lastActiveSeconds < 60) {
+      return 'только что';
+  }
+
+  const minutes = Math.floor(lastActiveSeconds / 60);
+
+  if (minutes <= 60) {
+      return `${minutes} минут назад`
+  }
+
+  const hours = Math.floor(lastActiveSeconds / 60 * 60);
+
+  if (hours <= 24) {
+      return `${hours} часов назад`;
+  }
+
+  const years = Math.floor(lastActiveSeconds / 60 * 60 * 24 * 365);
+
+  if (years <= 10) {
+      return lastActive;
+  }
+
+  return 'никогда';
+}
 ;function BaseCtrl($scope, $timeout, $http, $interval) {
 
     $scope.judge_version = judge.version;
@@ -471,6 +497,7 @@ function UserPageCtrl($scope, $http, $routeParams) {
         '0': 'progress-bar-item pull-left red-bg',
         '1': 'progress-bar-item pull-left green-bg',
     }
+    $scope.lastActiveHuman = null;
 
     $scope.tasks = [];
 
@@ -490,6 +517,9 @@ function UserPageCtrl($scope, $http, $routeParams) {
         .then(function(response) {
             if ( response.status === 200 ) {
                 $scope.user = response.data;
+                $scope.lastActiveHuman = humanizeLastActive(
+                    $scope.user.last_active_seconds,
+                    $scope.user.last_active);
             }
         }, $scope.errorHandler);
     }

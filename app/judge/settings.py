@@ -3,7 +3,7 @@ import os
 NAME = 'judge'
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_DIR = os.path.join('/var/lib/', NAME, 'data')
-VERSION = '0.9.0'
+VERSION = '0.10.0'
 
 SECRET_KEY = 'somestrongdjangokey'
 
@@ -32,6 +32,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'judge.api.middleware.LastActivityMiddleware',
 ]
 
 

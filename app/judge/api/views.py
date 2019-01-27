@@ -9,16 +9,16 @@ from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError
 
-from judge.api import serializers
-from judge.api.serializers import serialize, deserialize
-from judge.api.testsystem import test_solution
-from judge.api.im import get_user_messages
-from judge.api.models import Task, Solution, Comment
 from judge.api import im
+from judge.api import serializers
 from judge.api.common import inflect_name, get_staff_ids, get_logger
-from judge.api.testgenerators import generate_tests
-from judge.api.testcheckers import load_and_check_module
 from judge.api.common import list_to_dict
+from judge.api.im import get_user_messages
+from judge.api.models import Task, Solution, Comment, Profile
+from judge.api.serializers import serialize, deserialize
+from judge.api.testcheckers import load_and_check_module
+from judge.api.testgenerators import generate_tests
+from judge.api.testsystem import test_solution
 
 
 log = logging.getLogger('main.' + __name__)
@@ -161,12 +161,17 @@ class UserPageView(APIView):
 
         try:
             user = User.objects.get(username=username)
+            profile = Profile.get_user_profile(user)
         except User.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        serializer = serialize(serializers.UserSerializer, user)
+        user_serializer = serialize(serializers.UserSerializer, user)
+        profile_serializer = serialize(serializers.ProfileSerializer, profile)
 
-        return Response(serializer.data)
+        data = user_serializer.data
+        data.update(profile_serializer.data)
+
+        return Response(data)
 
 
 class UsersView(APIView):
