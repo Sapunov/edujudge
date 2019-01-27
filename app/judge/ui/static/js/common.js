@@ -43,13 +43,13 @@ function humanizeLastActive(lastActiveSeconds, lastActive) {
       return `${minutes} минут назад`
   }
 
-  const hours = Math.floor(lastActiveSeconds / 60 * 60);
+  const hours = Math.floor(lastActiveSeconds / (60 * 60));
 
   if (hours <= 24) {
       return `${hours} часов назад`;
   }
 
-  const years = Math.floor(lastActiveSeconds / 60 * 60 * 24 * 365);
+  const years = Math.floor(lastActiveSeconds / (60 * 60 * 24 * 365));
 
   if (years <= 10) {
       return lastActive;
