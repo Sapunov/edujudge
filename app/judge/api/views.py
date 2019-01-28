@@ -361,15 +361,11 @@ class DashboardViews(APIView):
 
     def _failed_tasks(self):
 
-        user_ids = set()
-        task_ids = set()
-        for user, task in Solution.fetch_failed_with_users():
-            user_ids.add(user.id)
-            task_ids.add(task.id)
+        user_ids_task_ids = Solution.fetch_failed_with_users()
 
         return {
-            'user_ids': sorted(user_ids),
-            'task_ids': sorted(task_ids)
+            'user_ids': [_[0] for _ in user_ids_task_ids],
+            'task_ids': [_[1] for _ in user_ids_task_ids]
         }
 
     def get(self, request):
