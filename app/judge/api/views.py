@@ -1,3 +1,4 @@
+from datetime import timedelta
 import django_rq
 import logging
 
@@ -326,3 +327,60 @@ class TestsCheckerView(APIView):
         django_rq.enqueue(load_and_check_module, script_path, request.user.id)
 
         return Response(status=status.HTTP_200_OK)
+
+
+class DashboardViews(APIView):
+
+    def _all_users_all_tasks(self, task_ids):
+
+        user_ids = User.objects.filter(is_staff=False).order_by('id').values_list('id', flat=True)
+
+        return {
+            'user_ids': user_ids,
+            'task_ids': task_ids
+        }
+
+    def _online_users_all_tasks(self, task_ids):
+
+        user_ids = [u.id for u in Profile.get_online_users()]
+
+        return {
+            'user_ids': user_ids,
+            'task_ids': task_ids
+        }
+
+    def _week_users_all_tasks(self, task_ids):
+
+        week_delta = timedelta(days=7)
+        user_ids = [u.id for u in Profile.get_active_users(week_delta)]
+
+        return {
+            'user_ids': user_ids,
+            'task_ids': task_ids
+        }
+
+    def _failed_tasks(self):
+
+        user_ids = set()
+        task_ids = set()
+        for user, task in Solution.fetch_failed_with_users():
+            user_ids.add(user.id)
+            task_ids.add(task.id)
+
+        return {
+            'user_ids': sorted(user_ids),
+            'task_ids': sorted(task_ids)
+        }
+
+    def get(self, request):
+
+        all_tasks_ids = Task.objects.all().order_by('id').values_list('id', flat=True)
+
+        result = {
+            'all_users_all_tasks': self._all_users_all_tasks(all_tasks_ids),
+            'online_users_all_tasks': self._online_users_all_tasks(all_tasks_ids),
+            'week_users_all_tasks': self._week_users_all_tasks(all_tasks_ids),
+            'failed_tasks': self._failed_tasks()
+        }
+
+        return Response(result)

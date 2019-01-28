@@ -384,8 +384,10 @@ input.ng-dirty.ng-invalid {
 }
 
 .progress-bar-wrapper {
-  padding-left: 0;
-  margin-top: 20px;
+  border: 1px solid #edeff1;
+  padding: 5px;
+  margin-top: 10px;
+  border-radius: 3px;
 }
 
 .progress-bar-item {

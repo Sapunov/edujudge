@@ -543,20 +543,7 @@ function DashboardCtrl($scope, $http, $routeParams, $location) {
     $scope.tasks_ids = $routeParams.tasks_ids ? $routeParams.tasks_ids.split(',') : null;
     $scope.usernames_or_ids = $routeParams.usernames_or_ids ? $routeParams.usernames_or_ids.split(',') : null;
     //
-    $scope.not_staff_users = null;
-    $scope.all_tasks = null;
-    $scope.suggest_link = $location.path();
-
-    function updateSuggestLink() {
-        $scope.suggest_link = $location.path();
-        const query = {
-            tasks_ids: $scope.all_tasks
-                ? $scope.all_tasks.map(({id}) => id).join(',') : '',
-            usernames_or_ids: $scope.not_staff_users
-                ? $scope.not_staff_users.map(({id}) => id).join(',') : ''
-        };
-        $scope.suggest_link += '?' + serialize(query);
-    }
+    $scope.suggestLinks = {};
 
     function loadSolutionsSummary(tasks_ids, usernames_or_ids) {
 
@@ -576,24 +563,17 @@ function DashboardCtrl($scope, $http, $routeParams, $location) {
         }, $scope.errorHandler);
     }
 
-    function loadNotStaff() {
+    function loadDashboardViews() {
 
-        $http.get(judge.api + '/users')
-        .then(function(response) {
+        $http.get(judge.api + '/dashboard/views').then(function(response) {
             if ( response.status === 200 ) {
-                $scope.not_staff_users = response.data;
-                updateSuggestLink();
-            }
-        }, $scope.errorHandler);
-    }
-
-    function loadTasks() {
-
-        $http.get(judge.api + '/tasks')
-        .then(function(response) {
-            if ( response.status === 200 ) {
-                $scope.all_tasks = response.data;
-                updateSuggestLink();
+                const data = response.data;
+                for (let key in data) {
+                    if (data[key].user_ids.length && data[key].task_ids.length) {
+                        $scope.suggestLinks[key] = generateSuggestLink(
+                            data[key].user_ids, data[key].task_ids);
+                    }
+                }
             }
         }, $scope.errorHandler);
     }
@@ -616,11 +596,18 @@ function DashboardCtrl($scope, $http, $routeParams, $location) {
         }
     }
 
+    function generateSuggestLink(userIds, taskIds) {
+        const query = {
+            usernames_or_ids: userIds.join(','),
+            tasks_ids: taskIds.join(',')
+        };
+        return $location.path() + '?' + serialize(query);
+    }
+
     loadSolutionsSummary($scope.tasks_ids, $scope.usernames_or_ids);
 
     if (!$scope.tasks_ids || !$scope.usernames_or_ids) {
-        loadNotStaff();
-        loadTasks();
+        loadDashboardViews();
     }
 }
 ;(function() {
