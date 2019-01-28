@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.utils import timezone
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 class Profile(models.Model):
@@ -33,6 +33,24 @@ class Profile(models.Model):
     def last_active_seconds(self):
 
         return int((timezone.now() - self.last_active).total_seconds())
+
+    @classmethod
+    def get_active_users(cls, delta, staff=False):
+
+        assert isinstance(delta, timedelta), 'Delta must be timedelta'
+
+        start_time = timezone.now() - delta
+        profiles = cls.objects.filter(last_active__gte=start_time)
+
+        if staff:
+            return [p.user for p in profiles]
+        else:
+            return [p.user for p in profiles if p.user.is_staff == False]
+
+    @classmethod
+    def get_online_users(cls, staff=False):
+
+        return cls.get_active_users(timedelta(seconds=60 * 5), staff)
 
 
 class Task(models.Model):
@@ -208,6 +226,44 @@ class Solution(models.Model):
                 solution.test.text += ' <данные обрезаны из-за большого размера>'
 
         return solutions
+
+    @classmethod
+    def fetch_failed_with_users(cls, staff=False):
+
+        solutions = cls.objects.all().order_by('-time')
+
+        def hashing_key(user_id, task_id):
+            return '{}-{}'.format(user_id, task_id)
+
+        marks = {}
+        users = {}
+        tasks = {}
+
+        for solution in solutions:
+            key = hashing_key(solution.user.id, solution.task.id)
+            users[solution.user.id] = solution.user
+            tasks[solution.task.id] = solution.task
+            # Таким образом получится словарь с ключами:
+            # user_id-task_id и самой минимальной оценкой за это задание.
+            # Ноль означает, что задание решено верно. То есть за
+            # один проход выясним все, что нам нужно
+            if key in marks:
+                marks[key] = min(marks[key], solution.error)
+            else:
+                marks[key] = solution.error
+
+        results = []
+
+        for key, mark in marks.items():
+            if mark > 0:
+                user_id, task_id = map(int, key.split('-'))
+                if staff:
+                    results.append((users[user_id], tasks[task_id]))
+                else:
+                    if not users[user_id].is_staff:
+                        results.append((users[user_id], tasks[task_id]))
+
+        return results
 
     @classmethod
     def is_task_solved(cls, task_id, user):

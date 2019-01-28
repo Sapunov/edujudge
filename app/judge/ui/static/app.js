@@ -569,8 +569,10 @@ function DashboardCtrl($scope, $http, $routeParams, $location) {
             if ( response.status === 200 ) {
                 const data = response.data;
                 for (let key in data) {
-                    $scope.suggestLinks[key] = generateSuggestLink(
-                        data[key].user_ids, data[key].task_ids);
+                    if (data[key].user_ids.length && data[key].task_ids.length) {
+                        $scope.suggestLinks[key] = generateSuggestLink(
+                            data[key].user_ids, data[key].task_ids);
+                    }
                 }
             }
         }, $scope.errorHandler);
