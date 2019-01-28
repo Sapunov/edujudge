@@ -13,11 +13,11 @@
           <small class="grey">Был(а) в сети: {{ lastActiveHuman }}</small>
         </div>
       </div>
+
       <hr>
+
       <div>
-        <p>
-          Прогресс по задачам
-        </p>
+        <b>Прогресс по задачам</b>
         <div class="clearfix progress-bar-wrapper">
             <span ng-switch on="alienPage && !user.is_staff">
               <span ng-switch-when="true">
@@ -35,6 +35,13 @@
             </span>
         </div>
       </div>
+
+      <br>
+
+      <div>
+        <b>Последние посылки</b>
+      </div>
+
     </div>
   </div>
 </div>

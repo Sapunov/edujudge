@@ -326,3 +326,24 @@ class TestsCheckerView(APIView):
         django_rq.enqueue(load_and_check_module, script_path, request.user.id)
 
         return Response(status=status.HTTP_200_OK)
+
+
+class DashboardViews(APIView):
+
+    def _all_users_all_tasks(self):
+
+        users = User.objects.filter(is_staff=False).order_by('id').values_list('id', flat=True)
+        tasks = Task.objects.all().order_by('id').values_list('id', flat=True)
+
+        return {
+            'user_ids': users,
+            'task_ids': tasks
+        }
+
+    def get(self, request):
+
+        result = {
+            'all_users_all_tasks': self._all_users_all_tasks()
+        }
+
+        return Response(result)

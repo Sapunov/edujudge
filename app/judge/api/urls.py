@@ -13,4 +13,5 @@ urlpatterns = [
     url(r'^comments/(?P<comment_id>[0-9]{1,10})', views.CommentView.as_view()),
     url(r'^tests/generate$', views.TestsGenerateView.as_view()),
     url(r'^tests/checker$', views.TestsCheckerView.as_view()),
+    url(r'^dashboard/views$', views.DashboardViews.as_view()),
 ]

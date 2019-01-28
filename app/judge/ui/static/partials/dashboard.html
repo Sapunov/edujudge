@@ -37,7 +37,21 @@
           </tr>
         </tbody>
       </table>
-      <p ng-hide="users">Нет данных для отображения.
-          <a ng-href='{{ suggest_link }}'>Вывести всё</a>
-      </p>
+      <div ng-hide="users">
+        <p>Нет данных для отображения. Выберите один из вариантов:</p>
+        <ul>
+          <li ng-show="suggestLinks.all_users_all_tasks">
+            <a ng-href="{{ suggestLinks.all_users_all_tasks }}">Все пользователи и все задания</a>
+          </li>
+          <li ng-show="suggestLinks.online_users_all_tasks">
+            <a ng-href='{{ suggestLinks.online_users_all_tasks }}'>Все задания, пользователи online</a>
+          </li>
+          <li ng-show="suggestLinks.week_users_all_tasks">
+            <a ng-href='{{ suggestLinks.week_users_all_tasks }}'>Все задания, пользователи были online в течение недели</a>
+          </li>
+          <li ng-show="suggestLinks.failed_tasks">
+            <a ng-href='{{ suggestLinks.failed_tasks }}'>Задания с неверными решениями</a>
+          </li>
+        </ul>
+      </div>
   </div>
