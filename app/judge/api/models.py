@@ -5,6 +5,7 @@ import pytz
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.models import Count
 from django.utils import timezone
 
 from datetime import datetime, timedelta
@@ -230,40 +231,24 @@ class Solution(models.Model):
     @classmethod
     def fetch_failed_with_users(cls, staff=False):
 
-        solutions = cls.objects.all().order_by('-time')
+        params = {
+            'error__gt': 0
+        }
 
-        def hashing_key(user_id, task_id):
-            return '{}-{}'.format(user_id, task_id)
+        if not staff:
+            params['user__is_staff'] = False
 
-        marks = {}
-        users = {}
-        tasks = {}
+        solutions = Solution.objects.filter(**params).values(
+            'user_id', 'task_id').annotate(count=Count('user_id', 'task_id'))
 
-        for solution in solutions:
-            key = hashing_key(solution.user.id, solution.task.id)
-            users[solution.user.id] = solution.user
-            tasks[solution.task.id] = solution.task
-            # Таким образом получится словарь с ключами:
-            # user_id-task_id и самой минимальной оценкой за это задание.
-            # Ноль означает, что задание решено верно. То есть за
-            # один проход выясним все, что нам нужно
-            if key in marks:
-                marks[key] = min(marks[key], solution.error)
-            else:
-                marks[key] = solution.error
+        user_ids = set()
+        task_ids = set()
 
-        results = []
+        for group in solutions:
+            user_ids.add(group['user_id'])
+            task_ids.add(group['task_id'])
 
-        for key, mark in marks.items():
-            if mark > 0:
-                user_id, task_id = map(int, key.split('-'))
-                if staff:
-                    results.append((users[user_id], tasks[task_id]))
-                else:
-                    if not users[user_id].is_staff:
-                        results.append((users[user_id], tasks[task_id]))
-
-        return results
+        return list(zip(sorted(user_ids), sorted(task_ids)))
 
     @classmethod
     def is_task_solved(cls, task_id, user):
