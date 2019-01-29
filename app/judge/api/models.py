@@ -5,7 +5,7 @@ import pytz
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
-from django.db.models import Count
+from django.db.models import Min
 from django.utils import timezone
 
 from datetime import datetime, timedelta
@@ -46,7 +46,7 @@ class Profile(models.Model):
         if staff:
             return [p.user for p in profiles]
         else:
-            return [p.user for p in profiles if p.user.is_staff == False]
+            return [p.user for p in profiles if not p.user.is_staff]
 
     @classmethod
     def get_online_users(cls, staff=False):
@@ -231,24 +231,23 @@ class Solution(models.Model):
     @classmethod
     def fetch_failed_with_users(cls, staff=False):
 
-        params = {
-            'error__gt': 0
-        }
+        params = {}
 
         if not staff:
             params['user__is_staff'] = False
 
         solutions = Solution.objects.filter(**params).values(
-            'user_id', 'task_id').annotate(count=Count('user_id', 'task_id'))
+            'user_id', 'task_id').annotate(min_mark=Min('error'))
 
         user_ids = set()
         task_ids = set()
 
         for group in solutions:
-            user_ids.add(group['user_id'])
-            task_ids.add(group['task_id'])
+            if group['min_mark'] > 0:
+                user_ids.add(group['user_id'])
+                task_ids.add(group['task_id'])
 
-        return list(zip(sorted(user_ids), sorted(task_ids)))
+        return list(sorted(user_ids)), list(sorted(task_ids))
 
     @classmethod
     def is_task_solved(cls, task_id, user):

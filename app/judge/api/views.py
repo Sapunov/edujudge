@@ -333,7 +333,8 @@ class DashboardViews(APIView):
 
     def _all_users_all_tasks(self, task_ids):
 
-        user_ids = User.objects.filter(is_staff=False).order_by('id').values_list('id', flat=True)
+        user_ids = User.objects.filter(
+            is_staff=False).order_by('id').values_list('id', flat=True)
 
         return {
             'user_ids': user_ids,
@@ -361,11 +362,11 @@ class DashboardViews(APIView):
 
     def _failed_tasks(self):
 
-        user_ids_task_ids = Solution.fetch_failed_with_users()
+        user_ids, task_ids = Solution.fetch_failed_with_users()
 
         return {
-            'user_ids': [_[0] for _ in user_ids_task_ids],
-            'task_ids': [_[1] for _ in user_ids_task_ids]
+            'user_ids': user_ids,
+            'task_ids': task_ids
         }
 
     def get(self, request):
