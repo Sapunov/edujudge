@@ -70,11 +70,11 @@ let judge = {
           </ul>
           <ul class="nav navbar-nav navbar-right">
 
-            <li class="dropdown" uib-dropdown>
+            <li class="dropdown" uib-dropdown ng-controller="notificationsCtrl">
               <a href="#"
                 class="notifications-bell" uib-dropdown-toggle>
                 <span>
-                  <span class="notif-badge">38</span>
+                  <span class="notif-badge" ng-show="unseenCount > 0" ng-bind="unseenCount"></span>
                 </span>
               </a>
               <div class="notifications-box" uib-dropdown-menu>

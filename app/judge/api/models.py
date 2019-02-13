@@ -1,5 +1,7 @@
-import os
+from datetime import datetime, timedelta
 import errno
+import logging
+import os
 import pytz
 
 from django.conf import settings
@@ -8,7 +10,10 @@ from django.db import models
 from django.db.models import Min
 from django.utils import timezone
 
-from datetime import datetime, timedelta
+from judge.api import im
+
+
+log = logging.getLogger('main.' + __name__)
 
 
 class Profile(models.Model):
@@ -340,17 +345,65 @@ class Comment(models.Model):
 class Notification(models.Model):
 
     KIND_CHOICES = (
-        ('cm', 'comment'),
+        ('co', 'comment'),
     )
 
     time = models.DateTimeField(auto_now_add=True)
     user_for = models.ForeignKey(User, on_delete=models.CASCADE, related_name='+')
     user_from = models.ForeignKey(User, on_delete=models.CASCADE, related_name='+')
     kind = models.CharField(max_length=2, choices=KIND_CHOICES)
-    link = models.CharField(max_length=500, null=True, blank=True)
+    html = models.CharField(max_length=1000, null=True, blank=True)
     seen = models.BooleanField(default=False)
 
     @classmethod
-    def send(cls):
+    def send(cls, user_for, user_from, kind, html=None, send_im=True, im_payload=None):
 
-        pass
+        notification = cls.objects.create(
+            user_for=user_for,
+            user_from=user_from,
+            kind=kind,
+            html=html)
+
+        if send_im:
+            try:
+                im.send_message(
+                    user_id=user_for.id,
+                    msg_type=kind,
+                    message=im_payload,
+                    alert_msg=html,
+                    notification_id=notification.id
+                )
+            except Exception as exc:
+                log.exception(exc)
+
+        # Увеличить счетчик в интерфейсе
+        try:
+            im.send_message(
+                user_id=user_for.id,
+                msg_type='unseen++'
+            )
+        except Exception as exc:
+            log.exception(exc)
+
+    @classmethod
+    def send_many(cls, users_for, user_from, kind, html=None, send_im=True, im_payload=None):
+
+        for user_for in users_for:
+            cls.send(user_for, user_from, kind, html, send_im, im_payload)
+
+    @classmethod
+    def mark_seen(cls, messages_ids_or_id):
+
+        if not isinstance(messages_ids_or_id, list):
+            messages_ids_or_id = [messages_ids_or_id]
+
+        cls.objects.filter(id__in=messages_ids_or_id).update(seen=True)
+
+        for message in cls.objects.filter(id__in=messages_ids_or_id):
+            try:
+                im.send_message(
+                    user_id=message.user_for.id,
+                    msg_type='unseen--'
+                )
+            except Exception as exc:
+                log.exception(exc)

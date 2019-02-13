@@ -88,6 +88,33 @@ function HeaderCtrl($scope, $timeout) {
 }
 
 
+function NotificationsCtrl($scope, $http) {
+
+    $scope.unseenCount = 0;
+
+    function fetchNotificationsCount() {
+        $http.get(judge.api + '/notifications/count').then(function(response) {
+            if ( response.status === 200 ) {
+                $scope.unseenCount = response.data.count;
+            }
+        }, $scope.errorHandler);
+    }
+
+    $scope.$on('im', function(event, data) {
+        switch ( data.type ) {
+            case 'unseen++':
+                $scope.unseenCount++;
+                break;
+            case 'unseen--':
+                $scope.unseenCount--;
+                break;
+        }
+    });
+
+    fetchNotificationsCount();
+}
+
+
 function IndexCtrl($scope, $http) {}
 
 
@@ -398,7 +425,7 @@ function TaskCommentsCtrl($scope, $http) {
     $scope.$on('im', function(event, data) {
 
         switch ( data.type ) {
-            case 'new_comment':
+            case 'co':
                 prependComment(data.data);
                 break;
         }

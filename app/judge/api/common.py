@@ -48,20 +48,28 @@ def inflect_name(name, surname):
     return '{} {}'.format(name_inflected, surname_inflected)
 
 
-def get_staff_ids(exclude=None):
+def get_staff(exclude=None):
 
     assert exclude is None or isinstance(exclude, list), 'Exclude must be list'
 
     users = User.objects.filter(is_staff=True)
-    ids = set()
+    if exclude is not None:
+        users = users.exclude(id__in=[_.id for _ in exclude])
+
+    return list(users)
+
+
+def get_staff_ids(exclude=None):
+
+    assert exclude is None or isinstance(exclude, list), 'Exclude must be list'
+
+    users = get_staff(exclude)
+    ids = []
 
     if len(users) > 0:
-        ids.update([it.id for it in users])
+        ids.update([_.id for _ in users])
 
-    if exclude is not None:
-        ids = ids - set(exclude)
-
-    return list(ids)
+    return ids
 
 
 def translit(string):
