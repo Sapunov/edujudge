@@ -334,3 +334,22 @@ class Comment(models.Model):
 
         verbose_name = 'Task comment'
         verbose_name_plural = 'Task comments'
+
+
+class Notification(models.Model):
+
+    KIND_CHOICES = (
+        ('cm', 'comment'),
+    )
+
+    time = models.DateTimeField(auto_now_add=True)
+    user_for = models.ForeignKey(User, on_delete=models.CASCADE, related_name='+')
+    user_from = models.ForeignKey(User, on_delete=models.CASCADE, related_name='+')
+    kind = models.CharField(max_length=2, choices=KIND_CHOICES)
+    link = models.CharField(max_length=500, null=True, blank=True)
+    seen = models.BooleanField(default=False)
+
+    @classmethod
+    def send(cls):
+
+        pass
