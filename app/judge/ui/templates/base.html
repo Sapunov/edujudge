@@ -69,12 +69,25 @@ let judge = {
             {% endif %}
           </ul>
           <ul class="nav navbar-nav navbar-right">
+
+            <li class="dropdown" uib-dropdown>
+              <a href="#"
+                class="notifications-bell" uib-dropdown-toggle>
+                <span>
+                  <span class="notif-badge">38</span>
+                </span>
+              </a>
+              <div class="notifications-box" uib-dropdown-menu>
+                привет
+              </div>
+            </li>
+
             <li class="dropdown" uib-dropdown>
               <a href="#"
                   role="button" class="dropdown-toggle" uib-dropdown-toggle>
                   <span ng-bind="name"></span>
                   <span class="caret"></span></a>
-              <ul class="dropdown-menu" uib-dropdown-menu>
+              <ul class="dropdown-menu" uib-dropdown-menu style="top: 51px !important;">
                 <li><a ng-href="/users/{% verbatim %}{{ user.username }}{% endverbatim %}">Моя страница</a></li>
                 <li role="separator" class="divider"></li>
                 <li><a href="/auth/logout">Выйти</a></li>
