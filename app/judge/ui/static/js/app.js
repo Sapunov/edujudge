@@ -11,6 +11,7 @@
     .controller('taskCommentsCtrl', TaskCommentsCtrl)
     .controller('studentsCtrl', StudentsCtrl)
     .controller('dashboardCtrl', DashboardCtrl)
+    .controller('notificationsCtrl', NotificationsCtrl)
 
     // Configuring routes
     .config(['$locationProvider', '$routeProvider', '$httpProvider',

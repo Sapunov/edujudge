@@ -8,14 +8,15 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework import generics
 from rest_framework.response import Response
-from rest_framework.exceptions import ValidationError, NotFound
+from rest_framework.exceptions import (ValidationError, NotFound,
+    PermissionDenied)
 
 from judge.api import im
 from judge.api import serializers
-from judge.api.common import inflect_name, get_staff_ids, get_logger
+from judge.api.common import inflect_name, get_staff_ids, get_logger, get_staff
 from judge.api.common import list_to_dict
 from judge.api.im import get_user_messages
-from judge.api.models import Task, Solution, Comment, Profile
+from judge.api.models import Task, Solution, Comment, Profile, Notification
 from judge.api.serializers import serialize, deserialize
 from judge.api.testcheckers import load_and_check_module
 from judge.api.testgenerators import generate_tests
@@ -52,7 +53,7 @@ class TasksListView(APIView):
         """Создание нового задания
         """
         if not request.user.is_staff:
-            return Response(status=status.HTTP_403_FORBIDDEN)
+            raise PermissionDenied()
 
         serializer = deserialize(serializers.TaskSerializer, data=request.data)
         serializer.save(user=request.user)
@@ -193,10 +194,19 @@ class UsersView(APIView):
 
             return Response(users_data)
         else:
-            return Response(status=status.HTTP_403_FORBIDDEN)
+            raise PermissionDenied()
 
 
 class IMView(APIView):
+
+    def _get_notification_ids(self, serialized_messages):
+
+        ids = []
+        for message in serialized_messages['messages']:
+            if message['notification_id'] is not None:
+                ids.append(message['notification_id'])
+
+        return ids
 
     def get(self, request, format=None):
         """Получение сообщений для каждого пользователя
@@ -205,6 +215,7 @@ class IMView(APIView):
 
         if messages is not None:
             serializer = serialize(serializers.IMSerializer, messages)
+            Notification.mark_seen(self._get_notification_ids(serializer.data))
 
             return Response(serializer.data)
 
@@ -224,7 +235,7 @@ class CommentsView(APIView):
 
         if request.user.username != data['username']:
             if not request.user.is_staff:
-                return Response(status=status.HTTP_403_FORBIDDEN)
+                raise PermissionDenied()
 
             try:
                 user = User.objects.get(username=data['username'])
@@ -249,36 +260,34 @@ class CommentsView(APIView):
 
         if request.user.username != serializer.validated_data['username']:
             if not request.user.is_staff:
-                return Response(status=status.HTTP_403_FORBIDDEN)
+                raise PermissionDenied()
 
         comment = serializer.save(user=request.user)
 
-        users = get_staff_ids(
-            exclude=[request.user.id, comment.task_owner.id]
-        )
+        recipients = get_staff(exclude=[request.user, comment.task_owner])
 
         if request.user.id != comment.task_owner.id:
-            users.append(comment.task_owner.id)
+            recipients.append(comment.task_owner)
 
-        try:
-            name_inflected = inflect_name(
-                serializer.data['user']['first_name'],
-                serializer.data['user']['last_name'])
-            msg = '<a href="/tasks/{task_id}?username={comment_username}">Новый комментарий</a>' \
-                + ' от <a href="/users/{commenter_username}">{commenter}</a> в задании #{task_id}'
-            im.send_message(
-                user_id=users,
-                msg_type='new_comment',
-                message=serializer.data,
-                alert_msg=msg.format(
-                    task_id=comment.task.id,
-                    comment_username=serializer.validated_data['username'],
-                    commenter_username=serializer.data['user']['username'],
-                    commenter=name_inflected
-                )
-            )
-        except Exception as exc:
-            log.exception(exc)
+        # Формирование нотификации
+        #
+        name_inflected = inflect_name(
+            serializer.data['user']['first_name'],
+            serializer.data['user']['last_name'])
+        msg = '<a href="/tasks/{task_id}?username={comment_username}">Новый комментарий</a>' \
+            + ' от <a href="/users/{commenter_username}">{commenter}</a> в задании #{task_id}'
+        alert_msg = msg.format(
+            task_id=comment.task.id,
+            comment_username=serializer.validated_data['username'],
+            commenter_username=serializer.data['user']['username'],
+            commenter=name_inflected)
+
+        Notification.send_many(
+            recipients,
+            request.user,
+            'co',
+            html=alert_msg,
+            im_payload=serializer.data)
 
         return Response(serializer.data)
 
@@ -294,7 +303,7 @@ class CommentView(APIView):
             raise NotFound()
 
         if comment.user.id != request.user.id:
-            return Response(status=status.HTTP_403_FORBIDDEN)
+            raise PermissionDenied()
 
         comment.delete()
 
@@ -307,7 +316,7 @@ class TestsGenerateView(APIView):
         """Генерация тестов с помощью скрипта
         """
         if not request.user.is_staff:
-            return Response(status=status.HTTP_403_FORBIDDEN)
+            raise PermissionDenied()
 
         serializer_in = deserialize(
             serializers.TestsGenerateSerializer, request.data)
@@ -328,7 +337,7 @@ class TestsCheckerView(APIView):
         """Проверка чекера тестов
         """
         if not request.user.is_staff:
-            return Response(status=status.HTTP_403_FORBIDDEN)
+            raise PermissionDenied()
 
         serializer_in = deserialize(
             serializers.TestsGenerateSerializer, request.data)
@@ -396,3 +405,15 @@ class DashboardViews(APIView):
         }
 
         return Response(result)
+
+
+class NotificationsCountView(APIView):
+
+    def get(self, request):
+
+        count = Notification.objects.filter(
+            user_for=request.user, seen=False).count()
+
+        return Response({
+            'count': count
+        })

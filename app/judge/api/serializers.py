@@ -257,6 +257,7 @@ class IMMessagesSerializer(serializers.Serializer):
     msg_type = serializers.CharField()
     alert_msg = serializers.CharField(allow_null=True)
     payload = serializers.JSONField()
+    notification_id = serializers.IntegerField()
 
 
 class IMSerializer(serializers.Serializer):
