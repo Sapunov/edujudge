@@ -4,6 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+<link rel="apple-touch-icon" sizes="180x180" href="/static/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/static/favicon-16x16.png">
+<link rel="manifest" href="/static/site.webmanifest">
+
 <title>{% block title %}Education Judge{% endblock %}</title>
 
 <base href="/">
@@ -56,7 +62,7 @@ let judge = {
     <nav class="navbar navbar-default">
       <div class="container">
         <div class="navbar-header">
-          <a class="navbar-brand" href="/">EduJudge</a>
+          <a class="navbar-brand" href="/">EDUJUDGE</a>
         </div>
         {% if user.is_authenticated %}
         <div id="navbar" class="navbar-collapse collapse">
@@ -72,14 +78,32 @@ let judge = {
 
             <li class="dropdown" uib-dropdown ng-controller="notificationsCtrl">
               <a href="#"
-                class="notifications-bell" uib-dropdown-toggle>
+                class="notifications-bell"
+                uib-dropdown-toggle
+                ng-click="loadNotifications()">
                 <span>
                   <span class="notif-badge" ng-show="unseenCount > 0" ng-bind="unseenCount"></span>
                 </span>
               </a>
               <div class="notifications-box" uib-dropdown-menu>
                 <div class="triangle"></div>
-                привет
+                <div class="header"></div>
+                <div class="scroll-items" ng-show="notifications !== null">
+                  <div class="notification-item-wrapper" ng-repeat="n10n in notifications">
+                    <div class="notification-item" ng-class="n10n.seen ? '' : 'item-unseen'">
+                      <span ng-bind-html="n10n.html"></span>
+                    </div>
+                  </div>
+                </div>
+                <div ng-hide="notifications !== null" class="wait-loader">
+                  <img src="/static/images/loading.gif" alt="">
+                </div>
+                <div class="footer">
+                  <a
+                    ng-show="nextLink !== null"
+                    ng-click="loadMore(event); $event.stopPropagation(); $event.preventDefault();"
+                    href="#">Загрузить еще</a>
+                </div>
               </div>
             </li>
 
