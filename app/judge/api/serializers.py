@@ -5,7 +5,9 @@ from django.contrib.auth.models import User
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError, NotFound, PermissionDenied
 
-from judge.api.models import Task, Test, Example, Solution, Comment
+from judge.api.models import (
+    Task, Test, Example,
+    Solution, Comment, Notification)
 from judge.api.common import count_data_types
 
 
@@ -257,7 +259,7 @@ class IMMessagesSerializer(serializers.Serializer):
     msg_type = serializers.CharField()
     alert_msg = serializers.CharField(allow_null=True)
     payload = serializers.JSONField()
-    notification_id = serializers.IntegerField()
+    notification_id = serializers.IntegerField(allow_null=True)
 
 
 class IMSerializer(serializers.Serializer):
@@ -319,3 +321,14 @@ class TestGenResultsSerializer(serializers.Serializer):
 
     test_generator = serializers.CharField(allow_null=True)
     tests = TestGenResultsItemSerializer(many=True)
+
+
+class NotificationsSerializer(serializers.ModelSerializer):
+
+    time = serializers.DateTimeField(format=settings.UI_DATETIME_FORMAT)
+    user_from = UserSerializer()
+
+    class Meta:
+        model = Notification
+        exclude = ('user_for',)
+

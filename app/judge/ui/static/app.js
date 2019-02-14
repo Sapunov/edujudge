@@ -150,11 +150,31 @@ function HeaderCtrl($scope, $timeout) {
 function NotificationsCtrl($scope, $http) {
 
     $scope.unseenCount = 0;
+    $scope.notifications = null;
+    $scope.nextLink = null;
+
+    $scope.loadNotifications = function () {
+        if ($scope.notifications === null) {
+            fetchNotifications();
+        }
+    }
+
+    $scope.loadMore = function () {
+    }
 
     function fetchNotificationsCount() {
         $http.get(judge.api + '/notifications/count').then(function(response) {
             if ( response.status === 200 ) {
                 $scope.unseenCount = response.data.count;
+            }
+        }, $scope.errorHandler);
+    }
+
+    function fetchNotifications() {
+        $http.get(judge.api + '/notifications').then(function(response) {
+            if ( response.status === 200 ) {
+                $scope.notifications = response.data.results;
+                $scope.nextLink = response.data.next;
             }
         }, $scope.errorHandler);
     }

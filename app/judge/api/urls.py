@@ -23,4 +23,5 @@ urlpatterns = [
     url(r'^dashboard/views$', views.DashboardViews.as_view()),
     #
     url(r'^notifications/count$', views.NotificationsCountView.as_view()),
+    url(r'^notifications$', views.NotificationsView.as_view()),
 ]

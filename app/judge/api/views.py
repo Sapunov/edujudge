@@ -421,10 +421,21 @@ class DashboardViews(APIView):
 class NotificationsCountView(APIView):
 
     def get(self, request):
-
+        """Возвращает количество непрочитанных нотификаций
+        """
         count = Notification.objects.filter(
             user_for=request.user, seen=False).count()
 
         return Response({
             'count': count
         })
+
+
+class NotificationsView(generics.ListAPIView):
+
+    serializer_class = serializers.NotificationsSerializer
+
+    def get_queryset(self):
+
+        user = self.request.user
+        return Notification.objects.filter(user_for=user).order_by('-id')
