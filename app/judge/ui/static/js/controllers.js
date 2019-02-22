@@ -92,7 +92,8 @@ function NotificationsCtrl($scope, $http) {
 
     $scope.unseenCount = 0;
     $scope.notifications = null;
-    $scope.nextLink = null;
+    $scope.showLoader = false;
+    $scope.nextLink = judge.api + '/notifications';
 
     $scope.loadNotifications = function () {
         if ($scope.notifications === null) {
@@ -101,6 +102,7 @@ function NotificationsCtrl($scope, $http) {
     }
 
     $scope.loadMore = function () {
+        fetchNotifications()
     }
 
     function fetchNotificationsCount() {
@@ -112,11 +114,16 @@ function NotificationsCtrl($scope, $http) {
     }
 
     function fetchNotifications() {
-        $http.get(judge.api + '/notifications').then(function(response) {
+        $scope.showLoader = true;
+        $http.get($scope.nextLink).then(function(response) {
             if ( response.status === 200 ) {
-                $scope.notifications = response.data.results;
+                if ($scope.notifications === null) {
+                    $scope.notifications = [];
+                }
+                $scope.notifications.push(...response.data.results);
                 $scope.nextLink = response.data.next;
             }
+            $scope.showLoader = false;
         }, $scope.errorHandler);
     }
 

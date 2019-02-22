@@ -87,21 +87,27 @@ let judge = {
               </a>
               <div class="notifications-box" uib-dropdown-menu>
                 <div class="triangle"></div>
-                <div class="header"></div>
-                <div class="scroll-items" ng-show="notifications !== null">
+                <div class="header">
+                  <ul>
+                    <li><a href="#">Все</a></li>
+                    <li><a href="#">Непрочитанные</a></li>
+                  </ul>
+                </div>
+                <div class="scroll-items">
                   <div class="notification-item-wrapper" ng-repeat="n10n in notifications">
                     <div class="notification-item" ng-class="n10n.seen ? '' : 'item-unseen'">
-                      <span ng-bind-html="n10n.html"></span>
+                      <p ng-bind-html="n10n.html"></p>
+                      <p><small class="grey" ng-bind="n10n.time"></small></p>
                     </div>
                   </div>
                 </div>
-                <div ng-hide="notifications !== null" class="wait-loader">
+                <!-- <div ng-show="showLoader" class="wait-loader">
                   <img src="/static/images/loading.gif" alt="">
-                </div>
+                </div> -->
                 <div class="footer">
                   <a
-                    ng-show="nextLink !== null"
-                    ng-click="loadMore(event); $event.stopPropagation(); $event.preventDefault();"
+                    ng-show="nextLink !== null && notifications !== null"
+                    ng-click="loadMore(); $event.stopPropagation(); $event.preventDefault();"
                     href="#">Загрузить еще</a>
                 </div>
               </div>

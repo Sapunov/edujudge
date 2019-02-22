@@ -661,6 +661,10 @@ input.ng-dirty.ng-invalid {
   border-left: 10px solid #fff;
 }
 
+.notification-item p {
+  margin: 0;
+}
+
 .item-unseen {
   border-left: 10px solid #e95653;
 }
@@ -676,7 +680,16 @@ input.ng-dirty.ng-invalid {
 }
 
 .notifications-box .header {
-  /* padding: 4px 0; */
+  padding: 8px 0;
+  border-bottom: 1px solid #e7e7e7;
+}
+
+.notifications-box .header ul li {
+  display: inline;
+}
+
+.notifications-box .header ul {
+  padding-left: 25px;
 }
 
 .notifications-box .scroll-items {

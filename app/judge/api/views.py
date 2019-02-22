@@ -1,6 +1,7 @@
 from datetime import timedelta
 import django_rq
 import logging
+import time  # TODO: remove
 
 from django.contrib.auth.models import User
 
@@ -436,6 +437,8 @@ class NotificationsView(generics.ListAPIView):
     serializer_class = serializers.NotificationsSerializer
 
     def get_queryset(self):
+
+        time.sleep(5)
 
         user = self.request.user
         return Notification.objects.filter(user_for=user).order_by('-id')
