@@ -64,9 +64,9 @@ class Task(models.Model):
     timelimit = models.SmallIntegerField()
     author = models.ForeignKey(User, on_delete=models.PROTECT, related_name='+')
     test_generator_path = models.FilePathField(
-        path=settings.TEST_GENERATORS_DIR, blank=True, null=True)
+        path=settings.TEST_GENERATORS_DIR, default=None, null=True)
     test_checker_path = models.FilePathField(
-        path=settings.TEST_CHECKERS_DIR, blank=True, null=True)
+        path=settings.TEST_CHECKERS_DIR, default=None, null=True)
 
     @property
     def has_checker(self):
