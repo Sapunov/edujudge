@@ -360,6 +360,16 @@ class DashboardViews(APIView):
             'task_ids': task_ids
         }
 
+    def _hour_users_all_tasks(self, task_ids):
+
+        hour_delta = timedelta(seconds=3600)
+        user_ids = [u.id for u in Profile.get_active_users(hour_delta)]
+
+        return {
+            'user_ids': user_ids,
+            'task_ids': task_ids
+        }
+
     def _failed_tasks(self):
 
         user_ids, task_ids = Solution.fetch_failed_with_users()
@@ -377,7 +387,8 @@ class DashboardViews(APIView):
             'all_users_all_tasks': self._all_users_all_tasks(all_tasks_ids),
             'online_users_all_tasks': self._online_users_all_tasks(all_tasks_ids),
             'week_users_all_tasks': self._week_users_all_tasks(all_tasks_ids),
-            'failed_tasks': self._failed_tasks()
+            'failed_tasks': self._failed_tasks(),
+            'hour_users_all_tasks': self._hour_users_all_tasks(all_tasks_ids)
         }
 
         return Response(result)
