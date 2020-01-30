@@ -17,7 +17,7 @@ class SolutionAdmin(admin.ModelAdmin):
 
 class TaskAdmin(admin.ModelAdmin):
 
-    list_display = ('id', 'title', 'author', 'test_checker_path')
+    list_display = ('id', 'title', 'author', 'test_checker_path', 'show')
     ordering = ('-id',)
     readonly_fields = ('checker_source',)
 

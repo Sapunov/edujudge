@@ -67,6 +67,7 @@ class Task(models.Model):
         path=settings.TEST_GENERATORS_DIR, default=None, null=True)
     test_checker_path = models.FilePathField(
         path=settings.TEST_CHECKERS_DIR, default=None, null=True)
+    show = models.BooleanField(default=True)
 
     @property
     def has_checker(self):
@@ -76,7 +77,7 @@ class Task(models.Model):
     @classmethod
     def all_with_user_solution(cls, user):
 
-        tasks = cls.objects.all().order_by('id')
+        tasks = cls.objects.filter(show=True).order_by('id')
         for i in range(len(tasks)):
             solutions = tasks[i].solutions.filter(user=user).order_by('error')
             if solutions.count() == 0:
