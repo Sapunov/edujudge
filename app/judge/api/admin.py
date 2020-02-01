@@ -1,5 +1,7 @@
 from django.contrib import admin
-from judge.api.models import Task, Solution, Comment, Test, Example
+from judge.api.models import (
+    Task, Solution, Comment,
+    Test, Example, Notification)
 
 
 class CommentAdmin(admin.ModelAdmin):
@@ -21,9 +23,15 @@ class TaskAdmin(admin.ModelAdmin):
     ordering = ('-id',)
     readonly_fields = ('checker_source',)
 
+class NotificationAdmin(admin.ModelAdmin):
+
+    list_display = ('id', 'kind', 'time', 'user_from', 'user_for', 'seen')
+    ordering = ('-id',)
+
 
 admin.site.register(Task, TaskAdmin)
 admin.site.register(Comment, CommentAdmin)
 admin.site.register(Test)
 admin.site.register(Example)
 admin.site.register(Solution, SolutionAdmin)
+admin.site.register(Notification, NotificationAdmin)

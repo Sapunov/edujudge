@@ -147,6 +147,61 @@ function HeaderCtrl($scope, $timeout) {
 }
 
 
+function NotificationsCtrl($scope, $http) {
+
+    $scope.unseenCount = 0;
+    $scope.notifications = null;
+    $scope.showLoader = false;
+    $scope.nextLink = judge.api + '/notifications';
+
+    $scope.loadNotifications = function () {
+        if ($scope.notifications === null) {
+            fetchNotifications();
+        }
+    }
+
+    $scope.loadMore = function () {
+        fetchNotifications()
+    }
+
+    function fetchNotificationsCount() {
+        $http.get(judge.api + '/notifications/count').then(function(response) {
+            if ( response.status === 200 ) {
+                $scope.unseenCount = response.data.count;
+            }
+        }, $scope.errorHandler);
+    }
+
+    function fetchNotifications() {
+        $scope.showLoader = true;
+        $http.get($scope.nextLink).then(function(response) {
+            if ( response.status === 200 ) {
+                if ($scope.notifications === null) {
+                    $scope.notifications = [];
+                }
+                $scope.notifications.push(...response.data.results);
+                $scope.nextLink = response.data.next;
+            }
+            $scope.showLoader = false;
+        }, $scope.errorHandler);
+    }
+
+    // TODO: доделать эту логику
+    // $scope.$on('im', function(event, data) {
+    //     switch ( data.type ) {
+    //         case 'unseen++':
+    //             $scope.unseenCount++;
+    //             break;
+    //         case 'unseen--':
+    //             $scope.unseenCount--;
+    //             break;
+    //     }
+    // });
+
+    // fetchNotificationsCount();
+}
+
+
 function IndexCtrl($scope, $http) {}
 
 
@@ -457,7 +512,7 @@ function TaskCommentsCtrl($scope, $http) {
     $scope.$on('im', function(event, data) {
 
         switch ( data.type ) {
-            case 'new_comment':
+            case 'co':
                 prependComment(data.data);
                 break;
         }
@@ -623,6 +678,7 @@ function DashboardCtrl($scope, $http, $routeParams, $location) {
     .controller('taskCommentsCtrl', TaskCommentsCtrl)
     .controller('studentsCtrl', StudentsCtrl)
     .controller('dashboardCtrl', DashboardCtrl)
+    .controller('notificationsCtrl', NotificationsCtrl)
 
     // Configuring routes
     .config(['$locationProvider', '$routeProvider', '$httpProvider',

@@ -3,7 +3,7 @@ import os
 NAME = 'judge'
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_DIR = os.path.join('/var/lib/', NAME, 'data')
-VERSION = '0.11.5'
+VERSION = '0.12.5'
 
 SECRET_KEY = 'somestrongdjangokey'
 
@@ -176,6 +176,8 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.SessionAuthentication',
     ),
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 10
 }
 
 STATIC_ROOT = os.path.join(DATA_DIR, 'static')

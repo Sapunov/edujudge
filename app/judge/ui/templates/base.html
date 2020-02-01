@@ -4,6 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+<link rel="apple-touch-icon" sizes="180x180" href="/static/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/static/favicon-16x16.png">
+<link rel="manifest" href="/static/site.webmanifest">
+
 <title>{% block title %}Education Judge{% endblock %}</title>
 
 <base href="/">
@@ -56,7 +62,7 @@ let judge = {
     <nav class="navbar navbar-default">
       <div class="container">
         <div class="navbar-header">
-          <a class="navbar-brand" href="/">EduJudge</a>
+          <a class="navbar-brand" href="/">EDUJUDGE</a>
         </div>
         {% if user.is_authenticated %}
         <div id="navbar" class="navbar-collapse collapse">
@@ -69,12 +75,50 @@ let judge = {
             {% endif %}
           </ul>
           <ul class="nav navbar-nav navbar-right">
+            <!-- TODO: доделать эту логику -->
+            <!-- <li class="dropdown" uib-dropdown ng-controller="notificationsCtrl">
+              <a href="#"
+                class="notifications-bell"
+                uib-dropdown-toggle
+                ng-click="loadNotifications()">
+                <span>
+                  <span class="notif-badge" ng-show="unseenCount > 0" ng-bind="unseenCount"></span>
+                </span>
+              </a>
+              <div class="notifications-box" uib-dropdown-menu>
+                <div class="triangle"></div>
+                <div class="header">
+                  <ul>
+                    <li><a href="#">Все</a></li>
+                    <li><a href="#">Непрочитанные</a></li>
+                  </ul>
+                </div>
+                <div class="scroll-items">
+                  <div class="notification-item-wrapper" ng-repeat="n10n in notifications">
+                    <div class="notification-item" ng-class="n10n.seen ? '' : 'item-unseen'">
+                      <p ng-bind-html="n10n.html"></p>
+                      <p><small class="grey" ng-bind="n10n.time"></small></p>
+                    </div>
+                  </div>
+                </div>
+                <div ng-show="showLoader" class="wait-loader">
+                  <img src="/static/images/loading.gif" alt="">
+                </div>
+                <div class="footer">
+                  <a
+                    ng-show="nextLink !== null && notifications !== null"
+                    ng-click="loadMore(); $event.stopPropagation(); $event.preventDefault();"
+                    href="#">Загрузить еще</a>
+                </div>
+              </div>
+            </li> -->
+
             <li class="dropdown" uib-dropdown>
               <a href="#"
                   role="button" class="dropdown-toggle" uib-dropdown-toggle>
                   <span ng-bind="name"></span>
                   <span class="caret"></span></a>
-              <ul class="dropdown-menu" uib-dropdown-menu>
+              <ul class="dropdown-menu" uib-dropdown-menu style="top: 51px !important;">
                 <li><a ng-href="/users/{% verbatim %}{{ user.username }}{% endverbatim %}">Моя страница</a></li>
                 <li role="separator" class="divider"></li>
                 <li><a href="/auth/logout">Выйти</a></li>
