@@ -127,18 +127,19 @@ function NotificationsCtrl($scope, $http) {
         }, $scope.errorHandler);
     }
 
-    $scope.$on('im', function(event, data) {
-        switch ( data.type ) {
-            case 'unseen++':
-                $scope.unseenCount++;
-                break;
-            case 'unseen--':
-                $scope.unseenCount--;
-                break;
-        }
-    });
+    // TODO: доделать эту логику
+    // $scope.$on('im', function(event, data) {
+    //     switch ( data.type ) {
+    //         case 'unseen++':
+    //             $scope.unseenCount++;
+    //             break;
+    //         case 'unseen--':
+    //             $scope.unseenCount--;
+    //             break;
+    //     }
+    // });
 
-    fetchNotificationsCount();
+    // fetchNotificationsCount();
 }
 
 

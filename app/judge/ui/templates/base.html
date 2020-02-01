@@ -75,8 +75,8 @@ let judge = {
             {% endif %}
           </ul>
           <ul class="nav navbar-nav navbar-right">
-
-            <li class="dropdown" uib-dropdown ng-controller="notificationsCtrl">
+            <!-- TODO: доделать эту логику -->
+            <!-- <li class="dropdown" uib-dropdown ng-controller="notificationsCtrl">
               <a href="#"
                 class="notifications-bell"
                 uib-dropdown-toggle
@@ -101,9 +101,9 @@ let judge = {
                     </div>
                   </div>
                 </div>
-                <!-- <div ng-show="showLoader" class="wait-loader">
+                <div ng-show="showLoader" class="wait-loader">
                   <img src="/static/images/loading.gif" alt="">
-                </div> -->
+                </div>
                 <div class="footer">
                   <a
                     ng-show="nextLink !== null && notifications !== null"
@@ -111,7 +111,7 @@ let judge = {
                     href="#">Загрузить еще</a>
                 </div>
               </div>
-            </li>
+            </li> -->
 
             <li class="dropdown" uib-dropdown>
               <a href="#"
