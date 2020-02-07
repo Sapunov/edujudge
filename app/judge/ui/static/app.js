@@ -509,14 +509,14 @@ function TaskCommentsCtrl($scope, $http) {
         }, $scope.errorHandler);
     }
 
-    $scope.$on('im', function(event, data) {
+    // $scope.$on('im', function(event, data) {
 
-        switch ( data.type ) {
-            case 'co':
-                prependComment(data.data);
-                break;
-        }
-    });
+    //     switch ( data.type ) {
+    //         case 'co':
+    //             prependComment(data.data);
+    //             break;
+    //     }
+    // });
 
     function prependComment(comment) {
 
@@ -539,7 +539,7 @@ function TaskCommentsCtrl($scope, $http) {
         }, $scope.errorHandler);
     }
 
-    loadComments();
+    // loadComments();
 }
 
 
@@ -674,8 +674,8 @@ function DashboardCtrl($scope, $http, $routeParams, $location) {
     .controller('tasklistCtrl', TaskListCtrl)
     .controller('taskeditCtrl', TaskEditCtrl)
     .controller('taskCtrl', TaskCtrl)
-    .controller('userpageCtrl', UserPageCtrl)
-    .controller('taskCommentsCtrl', TaskCommentsCtrl)
+    // .controller('userpageCtrl', UserPageCtrl)
+    // .controller('taskCommentsCtrl', TaskCommentsCtrl)
     .controller('studentsCtrl', StudentsCtrl)
     .controller('dashboardCtrl', DashboardCtrl)
     .controller('notificationsCtrl', NotificationsCtrl)
@@ -710,10 +710,10 @@ function DashboardCtrl($scope, $http, $routeParams, $location) {
                 controller: 'tasklistCtrl'
             })
 
-            .when('/users/:username', {
-                templateUrl: 'static/partials/userpage.html?v=' + judge.version,
-                controller: 'userpageCtrl'
-            })
+            // .when('/users/:username', {
+            //     templateUrl: 'static/partials/userpage.html?v=' + judge.version,
+            //     controller: 'userpageCtrl'
+            // })
 
             .when('/students', {
                 templateUrl: 'static/partials/students.html?v=' + judge.version,

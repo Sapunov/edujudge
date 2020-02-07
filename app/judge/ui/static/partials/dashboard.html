@@ -20,9 +20,9 @@
           <tr ng-repeat="user in users">
             <th scope="row">{{ $index + 1}}</th>
             <td>
-              <a ng-href="/users/{{ user.username }}">
+              <p>
                 {{ user.first_name }} {{ user.last_name }} ({{ user.username }})
-              </a>
+              </p>
             </td>
             <td
               ng-repeat="task in tasks"

@@ -450,14 +450,14 @@ function TaskCommentsCtrl($scope, $http) {
         }, $scope.errorHandler);
     }
 
-    $scope.$on('im', function(event, data) {
+    // $scope.$on('im', function(event, data) {
 
-        switch ( data.type ) {
-            case 'co':
-                prependComment(data.data);
-                break;
-        }
-    });
+    //     switch ( data.type ) {
+    //         case 'co':
+    //             prependComment(data.data);
+    //             break;
+    //     }
+    // });
 
     function prependComment(comment) {
 
@@ -480,7 +480,7 @@ function TaskCommentsCtrl($scope, $http) {
         }, $scope.errorHandler);
     }
 
-    loadComments();
+    // loadComments();
 }
 
 

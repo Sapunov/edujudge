@@ -7,8 +7,8 @@
     .controller('tasklistCtrl', TaskListCtrl)
     .controller('taskeditCtrl', TaskEditCtrl)
     .controller('taskCtrl', TaskCtrl)
-    .controller('userpageCtrl', UserPageCtrl)
-    .controller('taskCommentsCtrl', TaskCommentsCtrl)
+    // .controller('userpageCtrl', UserPageCtrl)
+    // .controller('taskCommentsCtrl', TaskCommentsCtrl)
     .controller('studentsCtrl', StudentsCtrl)
     .controller('dashboardCtrl', DashboardCtrl)
     .controller('notificationsCtrl', NotificationsCtrl)
@@ -43,10 +43,10 @@
                 controller: 'tasklistCtrl'
             })
 
-            .when('/users/:username', {
-                templateUrl: 'static/partials/userpage.html?v=' + judge.version,
-                controller: 'userpageCtrl'
-            })
+            // .when('/users/:username', {
+            //     templateUrl: 'static/partials/userpage.html?v=' + judge.version,
+            //     controller: 'userpageCtrl'
+            // })
 
             .when('/students', {
                 templateUrl: 'static/partials/students.html?v=' + judge.version,
