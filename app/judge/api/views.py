@@ -406,7 +406,7 @@ class DashboardViews(APIView):
     def get(self, request):
         """Получение аггрегированных данных для dashboard
         """
-        all_tasks_ids = Task.objects.all().order_by('id').values_list('id', flat=True)
+        all_tasks_ids = Task.objects.filter(show=True).order_by('id').values_list('id', flat=True)
 
         result = {
             'all_users_all_tasks': self._all_users_all_tasks(all_tasks_ids),
