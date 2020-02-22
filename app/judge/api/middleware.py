@@ -11,8 +11,7 @@ class LastActivityMiddleware:
 
         response = self.get_response(request)
 
-        # '/api/im' не считается, как активность пользователя
-        if request.user.is_authenticated() and request.path != '/api/im':
+        if request.user.is_authenticated():
             Profile.get_user_profile(request.user).mark_active()
 
         return response
